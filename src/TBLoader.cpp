@@ -101,11 +101,9 @@ void TBLoader::build_worldspawn(LMEntity& ent, LMEntityGeometry& geo)
 		auto& brush = ent.brushes[i];
 		auto& geo_brush = geo.brushes[i];
 
-		//TODO: Add translation offset to CSGMesh3D, and subtract it from actual vertice positions
-		//      This way the origin point will be correct!
-
 		auto csg_mesh = memnew(CSGMesh3D());
-		combiner->add_child(csg_mesh);
+		//combiner->add_child(csg_mesh);
+		add_child(csg_mesh);
 		csg_mesh->set_owner(get_owner());
 
 		PackedVector3Array vertices;
@@ -116,14 +114,41 @@ void TBLoader::build_worldspawn(LMEntity& ent, LMEntityGeometry& geo)
 
 		int index_offset = 0;
 
+		// Find mesh origin
+		Vector3 vertex_min, vertex_max;
+		bool has_vertex_min = false;
+
 		for (int j = 0; j < brush.face_count; j++) {
-			auto& face = brush.faces[j];
 			auto& geo_face = geo_brush.faces[j];
 
 			for (int k = 0; k < geo_face.vertex_count; k++) {
 				auto& v = geo_face.vertices[k];
 
-				vertices.push_back(Vector3(v.vertex.y / SCALE, v.vertex.z / SCALE, v.vertex.x / SCALE));
+				Vector3 vertex(v.vertex.y / SCALE, v.vertex.z / SCALE, v.vertex.x / SCALE);
+				if (!has_vertex_min || vertex.length_squared() < vertex_min.length_squared()) {
+					vertex_min = vertex;
+					has_vertex_min = true;
+				}
+				if (vertex.length_squared() > vertex_max.length_squared()) {
+					vertex_max = vertex;
+				}
+			}
+		}
+
+		Vector3 origin = vertex_min + (vertex_max - vertex_min) / 2;
+		csg_mesh->set_position(origin);
+
+		// Add all vertices minus origin
+		for (int j = 0; j < brush.face_count; j++) {
+			auto& face = brush.faces[j]; //TODO: Do we need this?
+			auto& geo_face = geo_brush.faces[j];
+
+			for (int k = 0; k < geo_face.vertex_count; k++) {
+				auto& v = geo_face.vertices[k];
+
+				Vector3 vertex(v.vertex.y / SCALE, v.vertex.z / SCALE, v.vertex.x / SCALE);
+
+				vertices.push_back(vertex - origin);
 				tangents.push_back(v.tangent.y);
 				tangents.push_back(v.tangent.z);
 				tangents.push_back(v.tangent.x);
