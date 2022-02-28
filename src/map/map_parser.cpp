@@ -59,7 +59,7 @@ void LMMapParser::reset_current_entity() {
 	current_entity.brush_count = 0;
 }
 
-bool LMMapParser::map_parser_load(const char *map_file) {
+bool LMMapParser::load_from_path(const char *map_file) {
 	map_data->map_data_reset();
 
 	reset_current_face();
@@ -103,6 +103,43 @@ bool LMMapParser::map_parser_load(const char *map_file) {
 	fclose(map);
 
 	return true;
+}
+
+void LMMapParser::load_from_godot_file(const godot::File& f) {
+	map_data->map_data_reset();
+
+	reset_current_face();
+	reset_current_brush();
+	reset_current_entity();
+
+	scope = PS_FILE;
+	comment = false;
+	entity_idx = -1;
+	brush_idx = -1;
+	face_idx = -1;
+	component_idx = 0;
+	valve_uvs = false;
+
+	int c;
+	char buf[255];
+	int buf_head = 0;
+	while (!f.eof_reached()) {
+		c = (int)f.get_8();
+
+		if (c == '\n') {
+			buf[buf_head] = '\0';
+			token(buf);
+			buf_head = 0;
+
+			newline();
+		} else if (isspace(c)) {
+			buf[buf_head] = '\0';
+			token(buf);
+			buf_head = 0;
+		} else {
+			buf[buf_head++] = c;
+		}
+	}
 }
 
 void LMMapParser::set_scope(PARSE_SCOPE new_scope) {

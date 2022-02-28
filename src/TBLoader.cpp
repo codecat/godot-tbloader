@@ -6,6 +6,8 @@
 #include <godot_cpp/classes/file.hpp>
 #include <godot_cpp/classes/csg_combiner3d.hpp>
 
+#include <map_parser.h>
+
 void TBLoader::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("set_map", "path"), &TBLoader::set_map);
@@ -44,6 +46,11 @@ void TBLoader::build()
 	}
 
 	f.open(m_map_path, File::READ);
-	UtilityFunctions::print("...todo");
+
+	LMMapParser parser(std::make_shared<LMMapData>());
+	parser.load_from_godot_file(f);
+
+	UtilityFunctions::print("..done?");
+
 	f.close();
 }
