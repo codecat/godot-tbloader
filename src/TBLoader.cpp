@@ -94,6 +94,7 @@ void TBLoader::build_worldspawn(LMEntity& ent, LMEntityGeometry& geo)
 	auto combiner = memnew(CSGCombiner3D());
 	add_child(combiner);
 	combiner->set_owner(get_owner());
+	combiner->set_use_collision(true); //TODO: Configurable
 
 	const int SCALE = 16; //TODO: Configurable
 
