@@ -10,7 +10,8 @@
 class LMGeoGenerator {
 public:
 	std::shared_ptr<LMMapData> map_data;
-	void geo_generator_run();
+
+	void run();
 
 	void generate_brush_vertices(int entity_idx, int brush_idx);
 	bool intersect_faces(LMFace f0, LMFace f1, LMFace f2, vec3 *o_vertex);

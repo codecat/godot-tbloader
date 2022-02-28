@@ -28,6 +28,7 @@ public:
 
 	int worldspawn_layer_count = 0;
 	LMWorldspawnLayer *worldspawn_layers = NULL;
+
 	void map_data_register_worldspawn_layer(const char *name, bool build_visuals);
 	int map_data_find_worldspawn_layer(int texture_idx);
 	int map_data_get_worldspawn_layer_count();

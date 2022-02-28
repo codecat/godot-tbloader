@@ -54,7 +54,7 @@ int sort_vertices_by_winding(const void *lhs_in, const void *rhs_in) {
 	return 0;
 }
 
-void LMGeoGenerator::geo_generator_run() {
+void LMGeoGenerator::run() {
 	map_data->entity_geo = (LMEntityGeometry *)malloc(map_data->entity_count * sizeof(LMEntityGeometry));
 
 	for (int e = 0; e < map_data->entity_count; ++e) {

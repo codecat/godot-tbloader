@@ -5,8 +5,8 @@
 
 #include <godot_cpp/classes/file.hpp>
 #include <godot_cpp/classes/csg_combiner3d.hpp>
-
-#include <map_parser.h>
+#include <godot_cpp/classes/csg_mesh3d.hpp>
+#include <godot_cpp/classes/array_mesh.hpp>
 
 void TBLoader::_bind_methods()
 {
@@ -39,18 +39,116 @@ void TBLoader::build()
 {
 	UtilityFunctions::print(String("Building map %s") % m_map_path);
 
+	while (get_child_count() > 0) {
+		auto child = get_child(0);
+		remove_child(child);
+		child->queue_free();
+	}
+
 	File f;
 	if (!f.file_exists(m_map_path)) {
 		UtilityFunctions::printerr("Map file does not exist!");
 		return;
 	}
 
+	auto map = std::make_shared<LMMapData>();
+
 	f.open(m_map_path, File::READ);
-
-	LMMapParser parser(std::make_shared<LMMapData>());
+	LMMapParser parser(map);
 	parser.load_from_godot_file(f);
-
-	UtilityFunctions::print("..done?");
-
 	f.close();
+
+	LMGeoGenerator geogen(map);
+	geogen.run();
+
+	for (int i = 0; i < map->entity_count; i++) {
+		auto& ent = map->entities[i];
+
+		for (int j = 0; j < ent.property_count; j++) {
+			auto& prop = ent.properties[j];
+			if (!strcmp(prop.key, "classname")) {
+				if (!strcmp(prop.value, "worldspawn")) {
+					build_worldspawn(ent, map->entity_geo[i]);
+
+				} else if (!strcmp(prop.value, "info_player_start")) {
+					//TODO
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < map->texture_count; i++) {
+		auto& tex = map->textures[i];
+		UtilityFunctions::print(String(tex.name));
+	}
+
+	UtilityFunctions::print(String("Worldspawns: %d") % (int64_t)map->worldspawn_layer_count);
+
+	UtilityFunctions::print(String("New children count: %d") % (int64_t)get_child_count());
+}
+
+void TBLoader::build_worldspawn(LMEntity& ent, LMEntityGeometry& geo)
+{
+	UtilityFunctions::print("Creating new worldspawn");
+
+	auto combiner = memnew(CSGCombiner3D());
+	add_child(combiner);
+	combiner->set_owner(get_owner());
+
+	const int SCALE = 16; //TODO: Configurable
+
+	for (int i = 0; i < ent.brush_count; i++) {
+		auto& brush = ent.brushes[i];
+		auto& geo_brush = geo.brushes[i];
+
+		//TODO: Add translation offset to CSGMesh3D, and subtract it from actual vertice positions
+		//      This way the origin point will be correct!
+
+		auto csg_mesh = memnew(CSGMesh3D());
+		combiner->add_child(csg_mesh);
+		csg_mesh->set_owner(get_owner());
+
+		PackedVector3Array vertices;
+		PackedFloat32Array tangents;
+		PackedVector3Array normals;
+		PackedVector2Array uvs;
+		PackedInt32Array indices;
+
+		int index_offset = 0;
+
+		for (int j = 0; j < brush.face_count; j++) {
+			auto& face = brush.faces[j];
+			auto& geo_face = geo_brush.faces[j];
+
+			for (int k = 0; k < geo_face.vertex_count; k++) {
+				auto& v = geo_face.vertices[k];
+
+				vertices.push_back(Vector3(v.vertex.y / SCALE, v.vertex.z / SCALE, v.vertex.x / SCALE));
+				tangents.push_back(v.tangent.y);
+				tangents.push_back(v.tangent.z);
+				tangents.push_back(v.tangent.x);
+				tangents.push_back(v.tangent.w);
+				normals.push_back(Vector3(v.normal.y, v.normal.z, v.normal.x));
+				uvs.push_back(Vector2(v.uv.u, v.uv.v));
+			}
+
+			for (int k = 0; k < geo_face.index_count; k++) {
+				indices.push_back(index_offset + geo_face.indices[k]);
+			}
+			index_offset += geo_face.vertex_count;
+		}
+
+		Array arrays;
+		arrays.resize(Mesh::ARRAY_MAX);
+		arrays[Mesh::ARRAY_VERTEX] = vertices;
+		arrays[Mesh::ARRAY_TANGENT] = tangents;
+		arrays[Mesh::ARRAY_NORMAL] = normals;
+		arrays[Mesh::ARRAY_TEX_UV] = uvs;
+		arrays[Mesh::ARRAY_INDEX] = indices;
+
+		Ref<ArrayMesh> mesh = memnew(ArrayMesh());
+		mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+		csg_mesh->set_mesh(mesh);
+		//TODO: mesh->set_material(..);
+	}
 }
