@@ -15,7 +15,7 @@ CSGBuilder::~CSGBuilder()
 {
 }
 
-void CSGBuilder::build_worldspawn(LMEntity& ent, LMEntityGeometry& geo)
+void CSGBuilder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo)
 {
 	UtilityFunctions::print("Creating new worldspawn");
 

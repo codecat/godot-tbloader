@@ -38,9 +38,9 @@ public:
 	SURFACE_SPLIT_TYPE split_type = SST_NONE;
 	int entity_filter_idx = -1;
 	int texture_filter_idx = -1;
-	int brush_filter_texture_idx;
-	int face_filter_texture_idx;
-	bool filter_worldspawn_layers;
+	int brush_filter_texture_idx = -1;
+	int face_filter_texture_idx = -1;
+	bool filter_worldspawn_layers = false;
 
 	LMSurfaces out_surfaces;
 

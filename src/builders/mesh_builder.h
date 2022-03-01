@@ -8,5 +8,8 @@ public:
 	MeshBuilder(TBLoader* loader);
 	virtual ~MeshBuilder();
 
-	virtual void build_map() override;
+	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo) override;
+
+protected:
+	virtual void build_texture_mesh(int idx, const char* name);
 };

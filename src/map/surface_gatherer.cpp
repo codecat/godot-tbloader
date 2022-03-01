@@ -35,9 +35,6 @@ void LMSurfaceGatherer::surface_gatherer_set_worldspawn_layer_filter(bool filter
 }
 
 bool LMSurfaceGatherer::surface_gatherer_filter_entity(int entity_idx) {
-	const LMEntity *ents = map_data->map_data_get_entities();
-	const LMEntity *ent = &ents[entity_idx];
-
 	// Omit filtered entity indices
 	if (entity_filter_idx != -1 && entity_idx != entity_filter_idx) {
 		return true;
@@ -68,12 +65,14 @@ bool LMSurfaceGatherer::surface_gatherer_filter_brush(int entity_idx, int brush_
 	}
 
 	// Omit brushes that are part of a worldspawn layer
-	for (int f = 0; f < brush_inst->face_count; ++f) {
-		face *face_inst = &brush_inst->faces[f];
-		for (int l = 0; l < map_data->worldspawn_layer_count; ++l) {
-			LMWorldspawnLayer *layer = &map_data->worldspawn_layers[l];
-			if (face_inst->texture_idx == layer->texture_idx) {
-				return filter_worldspawn_layers;
+	if (filter_worldspawn_layers) {
+		for (int f = 0; f < brush_inst->face_count; ++f) {
+			face *face_inst = &brush_inst->faces[f];
+			for (int l = 0; l < map_data->worldspawn_layer_count; ++l) {
+				LMWorldspawnLayer *layer = &map_data->worldspawn_layers[l];
+				if (face_inst->texture_idx == layer->texture_idx) {
+					return true;
+				}
 			}
 		}
 	}
@@ -138,12 +137,12 @@ void LMSurfaceGatherer::surface_gatherer_run() {
 	}
 
 	for (int e = 0; e < map_data->entity_count; ++e) {
-		const LMEntity *entity_inst = &map_data->entities[e];
-		const LMEntityGeometry *entity_geo_inst = &map_data->entity_geo[e];
-
 		if (surface_gatherer_filter_entity(e)) {
 			continue;
 		}
+
+		const LMEntity *entity_inst = &map_data->entities[e];
+		const LMEntityGeometry *entity_geo_inst = &map_data->entity_geo[e];
 
 		if (split_type == SST_ENTITY) {
 			if (entity_inst->spawn_type == EST_MERGE_WORLDSPAWN) {

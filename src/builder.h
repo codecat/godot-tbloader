@@ -25,6 +25,6 @@ public:
 	virtual void load_map(const String& path);
 	virtual void build_map();
 
-	virtual void build_worldspawn(LMEntity& ent, LMEntityGeometry& geo);
+	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo);
 	virtual void build_entity(int idx, LMEntity& ent, const String& classname);
 };
