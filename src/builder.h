@@ -2,7 +2,9 @@
 
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+
 #include <godot_cpp/classes/file.hpp>
+#include <godot_cpp/classes/texture2d.hpp>
 
 #include <map_parser.h>
 #include <geo_generator.h>
@@ -27,4 +29,8 @@ public:
 
 	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo);
 	virtual void build_entity(int idx, LMEntity& ent, const String& classname);
+
+protected:
+	static String texture_path(const char* name);
+	static Ref<Texture2D> texture_from_name(const char* name);
 };

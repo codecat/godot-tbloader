@@ -2,6 +2,7 @@
 
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
+#include <godot_cpp/classes/standard_material3d.hpp>
 
 #include <tb_loader.h>
 #include <surface_gatherer.h>
@@ -27,10 +28,17 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name)
 {
 	int inverse_scale = m_loader->m_inverse_scale;
 
-	//TODO: .png might not always be correct!
-	String tex_path = String("res://textures/") + name + ".png";
-	UtilityFunctions::print(String("Texture: %s") % tex_path);
+	// Load texture
+	auto res_texture = texture_from_name(name);
 
+	// Create material
+	Ref<StandardMaterial3D> material;
+	if (res_texture != nullptr) {
+		material = Ref<StandardMaterial3D>(memnew(StandardMaterial3D()));
+		material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
+	}
+
+	// Gather surfaces for this texture
 	LMSurfaceGatherer surf_gather(m_map);
 	surf_gather.surface_gatherer_set_entity_index_filter(idx);
 	surf_gather.surface_gatherer_set_texture_filter(name);
@@ -94,6 +102,10 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name)
 			tangents.push_back(v.tangent.x);
 			tangents.push_back(v.tangent.w);
 			normals.push_back(Vector3(v.normal.y, v.normal.z, v.normal.x));
+			if (material != nullptr) {
+				UtilityFunctions::print("      coord: ", vertex.x);
+				UtilityFunctions::print("      UV: ", v.uv.u, ", ", v.uv.v);
+			}
 			uvs.push_back(Vector2(v.uv.u, v.uv.v));
 		}
 
@@ -110,10 +122,13 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name)
 		arrays[Mesh::ARRAY_TEX_UV] = uvs;
 		arrays[Mesh::ARRAY_INDEX] = indices;
 
+		// Create mesh
 		Ref<ArrayMesh> mesh = memnew(ArrayMesh());
 		mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+		if (material != nullptr) {
+			mesh->surface_set_material(0, material);
+		}
 		mesh_instance->set_mesh(mesh);
-		//TODO: mesh->set_material(..);
 
 		if (m_loader->m_collision) {
 			//TODO: Experiment with the other colliders
