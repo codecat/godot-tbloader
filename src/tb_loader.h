@@ -8,10 +8,6 @@
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/classes/control.hpp>
 
-#include <map_parser.h>
-#include <geo_generator.h>
-#include <surface_gatherer.h>
-
 using namespace godot;
 
 class TBLoader : public Node3D
@@ -31,8 +27,8 @@ public:
 	void set_map(const String &path);
 	String get_map() const;
 
-	void build();
+	void clear();
 
-private:
-	void build_worldspawn(LMEntity& ent, LMEntityGeometry& geo);
+	void build_meshes();
+	void build_combined_csg();
 };

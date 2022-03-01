@@ -3,7 +3,7 @@
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
-#include <TBLoader.h>
+#include <tb_loader.h>
 
 using namespace godot;
 

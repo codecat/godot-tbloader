@@ -1,74 +1,29 @@
-#include <TBLoader.h>
+#include <builders/csg_builder.h>
 
-#include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/variant/utility_functions.hpp>
-
-#include <godot_cpp/classes/file.hpp>
 #include <godot_cpp/classes/csg_combiner3d.hpp>
 #include <godot_cpp/classes/csg_mesh3d.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 
-void TBLoader::_bind_methods()
-{
-	ClassDB::bind_method(D_METHOD("set_map", "path"), &TBLoader::set_map);
-	ClassDB::bind_method(D_METHOD("get_map"), &TBLoader::get_map);
-	ClassDB::bind_method(D_METHOD("build"), &TBLoader::build);
+#include <tb_loader.h>
 
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
-}
-
-TBLoader::TBLoader()
+CSGBuilder::CSGBuilder()
 {
 }
 
-TBLoader::~TBLoader()
+CSGBuilder::~CSGBuilder()
 {
 }
 
-void TBLoader::set_map(const String &path)
+void CSGBuilder::build(TBLoader* parent)
 {
-	m_map_path = path;
-}
-
-String TBLoader::get_map() const
-{
-	return m_map_path;
-}
-
-void TBLoader::build()
-{
-	UtilityFunctions::print(String("Building map %s") % m_map_path);
-
-	while (get_child_count() > 0) {
-		auto child = get_child(0);
-		remove_child(child);
-		child->queue_free();
-	}
-
-	File f;
-	if (!f.file_exists(m_map_path)) {
-		UtilityFunctions::printerr("Map file does not exist!");
-		return;
-	}
-
-	auto map = std::make_shared<LMMapData>();
-
-	f.open(m_map_path, File::READ);
-	LMMapParser parser(map);
-	parser.load_from_godot_file(f);
-	f.close();
-
-	LMGeoGenerator geogen(map);
-	geogen.run();
-
-	for (int i = 0; i < map->entity_count; i++) {
-		auto& ent = map->entities[i];
+	for (int i = 0; i < m_map->entity_count; i++) {
+		auto& ent = m_map->entities[i];
 
 		for (int j = 0; j < ent.property_count; j++) {
 			auto& prop = ent.properties[j];
 			if (!strcmp(prop.key, "classname")) {
 				if (!strcmp(prop.value, "worldspawn")) {
-					build_worldspawn(ent, map->entity_geo[i]);
+					build_worldspawn(parent, ent, m_map->entity_geo[i]);
 
 				} else if (!strcmp(prop.value, "info_player_start")) {
 					//TODO
@@ -76,24 +31,15 @@ void TBLoader::build()
 			}
 		}
 	}
-
-	for (int i = 0; i < map->texture_count; i++) {
-		auto& tex = map->textures[i];
-		UtilityFunctions::print(String(tex.name));
-	}
-
-	UtilityFunctions::print(String("Worldspawns: %d") % (int64_t)map->worldspawn_layer_count);
-
-	UtilityFunctions::print(String("New children count: %d") % (int64_t)get_child_count());
 }
 
-void TBLoader::build_worldspawn(LMEntity& ent, LMEntityGeometry& geo)
+void CSGBuilder::build_worldspawn(TBLoader* parent, LMEntity& ent, LMEntityGeometry& geo)
 {
 	UtilityFunctions::print("Creating new worldspawn");
 
 	auto combiner = memnew(CSGCombiner3D());
-	add_child(combiner);
-	combiner->set_owner(get_owner());
+	parent->add_child(combiner);
+	combiner->set_owner(parent->get_owner());
 	combiner->set_use_collision(true); //TODO: Configurable
 
 	const int SCALE = 16; //TODO: Configurable
@@ -103,9 +49,8 @@ void TBLoader::build_worldspawn(LMEntity& ent, LMEntityGeometry& geo)
 		auto& geo_brush = geo.brushes[i];
 
 		auto csg_mesh = memnew(CSGMesh3D());
-		//combiner->add_child(csg_mesh);
-		add_child(csg_mesh);
-		csg_mesh->set_owner(get_owner());
+		combiner->add_child(csg_mesh);
+		csg_mesh->set_owner(parent->get_owner());
 
 		PackedVector3Array vertices;
 		PackedFloat32Array tangents;
