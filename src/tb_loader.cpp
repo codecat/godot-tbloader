@@ -10,6 +10,10 @@ void TBLoader::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("set_map", "path"), &TBLoader::set_map);
 	ClassDB::bind_method(D_METHOD("get_map"), &TBLoader::get_map);
+	ClassDB::bind_method(D_METHOD("set_inverse_scale", "inverse_scale"), &TBLoader::set_inverse_scale);
+	ClassDB::bind_method(D_METHOD("get_inverse_scale"), &TBLoader::get_inverse_scale);
+	ClassDB::bind_method(D_METHOD("set_collision", "collision"), &TBLoader::set_collision);
+	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
@@ -17,6 +21,7 @@ void TBLoader::_bind_methods()
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "inverse_scale", PROPERTY_HINT_NONE, "Inverse Scale"), "set_inverse_scale", "get_inverse_scale");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
 }
 
 TBLoader::TBLoader()
