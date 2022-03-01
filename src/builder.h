@@ -14,13 +14,17 @@ class TBLoader;
 
 class Builder
 {
-protected:
+public:
+	TBLoader* m_loader;
 	std::shared_ptr<LMMapData> m_map;
 
 public:
-	Builder();
+	Builder(TBLoader* loader);
 	virtual ~Builder();
 
 	virtual void load_map(const String& path);
-	virtual void build(TBLoader* parent) = 0;
+	virtual void build_map();
+
+	virtual void build_worldspawn(LMEntity& ent, LMEntityGeometry& geo);
+	virtual void build_entity(int idx, LMEntity& ent, const String& classname);
 };

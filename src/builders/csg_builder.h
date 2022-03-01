@@ -5,11 +5,9 @@
 class CSGBuilder : public Builder
 {
 public:
-	CSGBuilder();
+	CSGBuilder(TBLoader* loader);
 	virtual ~CSGBuilder();
 
-	virtual void build(TBLoader* parent) override;
-
 protected:
-	virtual void build_worldspawn(TBLoader* parent, LMEntity& ent, LMEntityGeometry& geo);
+	virtual void build_worldspawn(LMEntity& ent, LMEntityGeometry& geo) override;
 };
