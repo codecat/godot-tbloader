@@ -21,15 +21,15 @@ sources += Glob("src/map/*.cpp")
 
 if env["platform"] == "osx":
 	library = env.SharedLibrary(
-		"addons/tbloader/bin/libtbloader.{}.{}.framework/libtbloader.{}.{}".format(
-			env["platform"], env["target"], env["platform"], env["target"]
+		"addons/tbloader/bin/libtbloader.{}.framework/libtbloader.{}".format(
+			env["platform"], env["platform"]
 		),
 		source=sources,
 	)
 else:
 	library = env.SharedLibrary(
-		"addons/tbloader/bin/tbloader.{}.{}.{}{}".format(
-			env["platform"], env["target"], env["arch_suffix"], env["SHLIBSUFFIX"]
+		"addons/tbloader/bin/tbloader.{}.{}{}".format(
+			env["platform"], env["arch_suffix"], env["SHLIBSUFFIX"]
 		),
 		source=sources,
 	)
