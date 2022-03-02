@@ -1,0 +1,8 @@
+@SolidClass = worldspawn : "World entity" []
+
+@PointClass size(-16 -16 -16, 16 16 16) color(0 255 0) = info_player_start : "Player start" []
+
+@PointClass size(-4 -4 -4, 4 4 4) color(255 255 0) = light : "Light" [
+	range(float) : "Range" : 10
+	light_color(color255) : "Color" : "255 255 255"
+]
