@@ -29,7 +29,7 @@ public:
 	TBLoader();
 	~TBLoader();
 
-	void set_map(const String &path);
+	void set_map(const String& map);
 	String get_map() const;
 
 	void set_inverse_scale(int scale);

@@ -35,9 +35,9 @@ TBLoader::~TBLoader()
 {
 }
 
-void TBLoader::set_map(const String &path)
+void TBLoader::set_map(const String& map)
 {
-	m_map_path = path;
+	m_map_path = map;
 }
 
 String TBLoader::get_map() const
