@@ -20,14 +20,12 @@ void MeshBuilder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo
 {
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
-		build_texture_mesh(idx, tex.name);
+		build_texture_mesh(idx, tex.name, lm_transform(ent.center));
 	}
 }
 
-void MeshBuilder::build_texture_mesh(int idx, const char* name)
+void MeshBuilder::build_texture_mesh(int idx, const char* name, const Vector3& center)
 {
-	int inverse_scale = m_loader->m_inverse_scale;
-
 	// Load texture
 	auto res_texture = texture_from_name(name);
 
@@ -73,7 +71,7 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name)
 		for (int k = 0; k < surf.vertex_count; k++) {
 			auto& v = surf.vertices[k];
 
-			Vector3 vertex(v.vertex.y / inverse_scale, v.vertex.z / inverse_scale, v.vertex.x / inverse_scale);
+			Vector3 vertex = lm_transform(v.vertex);
 			if (!has_vertex_min || vertex.length_squared() < vertex_min.length_squared()) {
 				vertex_min = vertex;
 				has_vertex_min = true;
@@ -84,15 +82,13 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name)
 		}
 
 		Vector3 origin = vertex_min + (vertex_max - vertex_min) / 2;
-		mesh_instance->set_position(origin);
+		mesh_instance->set_position(origin + center);
 
 		// Add all vertices minus origin
 		for (int k = 0; k < surf.vertex_count; k++) {
 			auto& v = surf.vertices[k];
 
-			Vector3 vertex(v.vertex.y / inverse_scale, v.vertex.z / inverse_scale, v.vertex.x / inverse_scale);
-
-			vertices.push_back(vertex - origin);
+			vertices.push_back(lm_transform(v.vertex) - origin);
 			tangents.push_back(v.tangent.y);
 			tangents.push_back(v.tangent.z);
 			tangents.push_back(v.tangent.x);

@@ -14,6 +14,8 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_inverse_scale"), &TBLoader::get_inverse_scale);
 	ClassDB::bind_method(D_METHOD("set_collision", "collision"), &TBLoader::set_collision);
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
+	ClassDB::bind_method(D_METHOD("set_common_entities", "common_entities"), &TBLoader::set_common_entities);
+	ClassDB::bind_method(D_METHOD("get_common_entities"), &TBLoader::get_common_entities);
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
@@ -22,6 +24,7 @@ void TBLoader::_bind_methods()
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "inverse_scale", PROPERTY_HINT_NONE, "Inverse Scale"), "set_inverse_scale", "get_inverse_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "common_entities", PROPERTY_HINT_NONE, "Common Entities"), "set_common_entities", "get_common_entities");
 }
 
 TBLoader::TBLoader()
@@ -60,6 +63,16 @@ void TBLoader::set_collision(bool enabled)
 bool TBLoader::get_collision()
 {
 	return m_collision;
+}
+
+void TBLoader::set_common_entities(bool enabled)
+{
+	m_common_entities = enabled;
+}
+
+bool TBLoader::get_common_entities()
+{
+	return m_common_entities;
 }
 
 void TBLoader::clear()

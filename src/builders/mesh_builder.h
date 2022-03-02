@@ -11,5 +11,5 @@ public:
 	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo) override;
 
 protected:
-	virtual void build_texture_mesh(int idx, const char* name);
+	virtual void build_texture_mesh(int idx, const char* name, const Vector3& center);
 };

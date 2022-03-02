@@ -29,6 +29,10 @@ public:
 
 	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo);
 	virtual void build_entity(int idx, LMEntity& ent, const String& classname);
+	virtual void build_entity_light(int idx, LMEntity& ent);
+
+protected:
+	Vector3 lm_transform(const vec3& v);
 
 protected:
 	static String texture_path(const char* name);
