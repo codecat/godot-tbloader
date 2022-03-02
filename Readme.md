@@ -16,6 +16,12 @@ fork is made as an Engine Module, which requires recompiling the entire engine.
 If you're already using Qodot on Godot 3, there's probably not much reason for you to use this. It
 is also not backwards compatible with Qodot, and probably does a few things differently.
 
+# TrenchBroom game config
+The `tb-gameconfig` folder contains a game configuration for this addon. This includes a simple FGD
+which will have some common entities that create Godot nodes. Simply place the files in a folder
+called `Godot` inside the `games` folder of your TrenchBroom installation. So you would have
+`games/Godot/<files>`.
+
 # Credits
 * [Qodot](https://github.com/QodotPlugin/qodot-plugin)
 * [Original libmap](https://github.com/QodotPlugin/libmap)
