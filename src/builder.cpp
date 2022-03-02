@@ -94,7 +94,6 @@ void Builder::build_entity_light(int idx, LMEntity& ent)
 	light->set_position(lm_transform(ent.get_property_vec3("origin")));
 
 	vec3 color = ent.get_property_vec3("light_color", { 255, 255, 255 });
-	UtilityFunctions::print("Color: ", color.x, " ", color.y, " ", color.z);
 	light->set_color(Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f));
 
 	m_loader->add_child(light);
