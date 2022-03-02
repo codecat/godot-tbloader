@@ -45,16 +45,12 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name)
 	surf_gather.surface_gatherer_run();
 
 	auto& surfs = surf_gather.out_surfaces;
-	UtilityFunctions::print(String("  Surfaces: %d") % (int64_t)surfs.surface_count);
-
 	if (surfs.surface_count == 0) {
 		return;
 	}
 
 	for (int i = 0; i < surfs.surface_count; i++) {
 		auto& surf = surfs.surfaces[i];
-		UtilityFunctions::print(String("    Vertices: %d") % (int64_t)surf.vertex_count);
-
 		if (surf.vertex_count == 0) {
 			continue;
 		}
@@ -102,10 +98,6 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name)
 			tangents.push_back(v.tangent.x);
 			tangents.push_back(v.tangent.w);
 			normals.push_back(Vector3(v.normal.y, v.normal.z, v.normal.x));
-			if (material != nullptr) {
-				UtilityFunctions::print("      coord: ", vertex.x);
-				UtilityFunctions::print("      UV: ", v.uv.u, ", ", v.uv.v);
-			}
 			uvs.push_back(Vector2(v.uv.u, v.uv.v));
 		}
 
