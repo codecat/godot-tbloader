@@ -248,22 +248,23 @@ void LMMapParser::token(const char *buf) {
 		case PS_PROPERTY_VALUE: {
 			prop = &current_entity.properties[current_entity.property_count];
 
-			size_t buf_length = strlen(buf);
-
-			bool is_first = buf[0] == '"';
-			bool is_last = buf[buf_length - 1] == '"';
-
-			if (is_first) {
-				if (current_property != NULL) {
-					free(current_property);
-					current_property = NULL;
-				}
-			}
-
 			size_t current_length = 0;
 			if (current_property != NULL) {
 				current_length = strlen(current_property);
-			};
+			}
+
+			size_t buf_length = strlen(buf);
+
+			bool is_first, is_last;
+			if (buf_length == 1 && buf[0] == '"') {
+				is_first = current_length == 0;
+				is_last = !is_first;
+			} else if (buf_length == 0) {
+				is_first = is_last = false;
+			} else {
+				is_first = buf[0] == '"';
+				is_last = buf[buf_length - 1] == '"';
+			}
 
 			if (!is_first && is_last) {
 				current_property = (char *)realloc(current_property, current_length + buf_length + 2);
@@ -275,11 +276,12 @@ void LMMapParser::token(const char *buf) {
 				memcpy(&current_property[current_length], buf, buf_length + 1);
 
 			} else {
-				current_property = (char *)realloc(current_property, current_length + buf_length + 3);
+				current_property = (char *)realloc(current_property, current_length + buf_length + 2);
 				current_property[current_length] = ' ';
-				memcpy(&current_property[current_length + 1], buf, buf_length);
-				current_property[current_length + buf_length + 1] = ' ';
-				current_property[current_length + buf_length + 2] = '\0';
+				if (buf_length > 0) {
+					memcpy(&current_property[current_length + 1], buf, buf_length);
+				}
+				current_property[current_length + buf_length + 1] = '\0';
 			}
 
 			if (is_last) {
@@ -287,6 +289,9 @@ void LMMapParser::token(const char *buf) {
 				prop->value[strlen(prop->value) - 1] = '\0';
 				current_entity.property_count++;
 				set_scope(PS_ENTITY);
+
+				free(current_property);
+				current_property = NULL;
 			}
 			break;
 		}
