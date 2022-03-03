@@ -36,8 +36,7 @@ public:
 protected:
 	Vector3 lm_transform(const vec3& v);
 
-	Vector3 get_origin_from_surface(LMSurface& surf);
-	Ref<Mesh> create_mesh_from_surface(LMSurface& surf, const Vector3& origin = Vector3());
+	Ref<Mesh> create_mesh_from_surface(LMSurface& surf);
 
 protected:
 	static String texture_path(const char* name);

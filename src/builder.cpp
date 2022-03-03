@@ -137,14 +137,13 @@ void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
 		}
 
 		// Create the mesh
-		auto origin = get_origin_from_surface(surf);
-		auto mesh = create_mesh_from_surface(surf, origin);
+		auto mesh = create_mesh_from_surface(surf);
 
 		// Create the area
 		auto area = memnew(Area3D());
 		m_loader->add_child(area);
 		area->set_owner(m_loader->get_owner());
-		area->set_position(origin + center);
+		area->set_position(center);//origin + center);
 
 		// Create collision shape for the area
 		auto collision_shape = memnew(CollisionShape3D());
@@ -160,28 +159,7 @@ Vector3 Builder::lm_transform(const vec3& v)
 	return Vector3(sv.y, sv.z, sv.x);
 }
 
-Vector3 Builder::get_origin_from_surface(LMSurface& surf)
-{
-	Vector3 vertex_min, vertex_max;
-	bool has_vertex_min = false;
-
-	for (int k = 0; k < surf.vertex_count; k++) {
-		auto& v = surf.vertices[k];
-
-		Vector3 vertex = lm_transform(v.vertex);
-		if (!has_vertex_min || vertex.length_squared() < vertex_min.length_squared()) {
-			vertex_min = vertex;
-			has_vertex_min = true;
-		}
-		if (vertex.length_squared() > vertex_max.length_squared()) {
-			vertex_max = vertex;
-		}
-	}
-
-	return vertex_min + (vertex_max - vertex_min) / 2;
-}
-
-Ref<Mesh> Builder::create_mesh_from_surface(LMSurface& surf, const Vector3& origin)
+Ref<Mesh> Builder::create_mesh_from_surface(LMSurface& surf)
 {
 	PackedVector3Array vertices;
 	PackedFloat32Array tangents;
@@ -189,11 +167,11 @@ Ref<Mesh> Builder::create_mesh_from_surface(LMSurface& surf, const Vector3& orig
 	PackedVector2Array uvs;
 	PackedInt32Array indices;
 
-	// Add all vertices minus origin
+	// Add all vertices
 	for (int k = 0; k < surf.vertex_count; k++) {
 		auto& v = surf.vertices[k];
 
-		vertices.push_back(lm_transform(v.vertex) - origin);
+		vertices.push_back(lm_transform(v.vertex));
 		tangents.push_back(v.tangent.y);
 		tangents.push_back(v.tangent.z);
 		tangents.push_back(v.tangent.x);

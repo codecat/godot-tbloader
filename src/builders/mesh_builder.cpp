@@ -61,11 +61,10 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent)
 		mesh_instance->set_owner(m_loader->get_owner());
 
 		// Find mesh origin
-		Vector3 origin = get_origin_from_surface(surf);
-		mesh_instance->set_position(origin + center);
+		mesh_instance->set_position(center);
 
 		// Create mesh
-		auto mesh = create_mesh_from_surface(surf, origin);
+		auto mesh = create_mesh_from_surface(surf);
 
 		// Give mesh material
 		if (material != nullptr) {
