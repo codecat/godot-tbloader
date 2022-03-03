@@ -18,6 +18,8 @@ MeshBuilder::~MeshBuilder()
 
 void MeshBuilder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo)
 {
+	//TODO: Queue these meshes up so that we can put multiple worldspawn entities into 1 mesh
+
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
 		build_texture_mesh(idx, tex.name, lm_transform(ent.center));
