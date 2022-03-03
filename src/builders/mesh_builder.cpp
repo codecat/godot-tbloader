@@ -17,19 +17,45 @@ void MeshBuilder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo
 {
 	//TODO: Queue these meshes up so that we can put multiple worldspawn entities into 1 mesh
 
+	// Create node for this entity
+	auto container_node = memnew(Node3D());
+	m_loader->add_child(container_node);
+	container_node->set_owner(m_loader->get_owner());
+
+	// Create mesh instance for each texture
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
-		build_texture_mesh(idx, tex.name, ent);
+		build_texture_mesh(idx, tex.name, ent, container_node);
 	}
+
+	// Delete container if we added nothing to it
+	if (container_node->get_child_count() == 0) {
+		container_node->queue_free();
+		return;
+	}
+
+	// Find name for entity
+	const char* tb_name;
+	if (!strcmp(ent.get_property("classname"), "worldspawn")) {
+		tb_name = "Default Layer";
+	} else {
+		tb_name = ent.get_property("_tb_name", nullptr);
+	}
+
+	// Add container to loader
+	if (tb_name != nullptr) {
+		container_node->set_name(tb_name);
+	}
+	container_node->set_position(lm_transform(ent.center));
 }
 
-void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent)
+void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent, Node3D* parent)
 {
 	// Load texture
 	auto res_texture = texture_from_name(name);
 
-	// Get entity properties
-	Vector3 center = lm_transform(ent.center);
+	// Use texture as name for the mesh instance
+	String instance_name = String(name).replace("/", "_");
 
 	// Create material
 	Ref<StandardMaterial3D> material;
@@ -57,11 +83,11 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent)
 
 		// Create mesh instance
 		auto mesh_instance = memnew(MeshInstance3D());
-		m_loader->add_child(mesh_instance);
+		if (instance_name != "") {
+			mesh_instance->set_name(instance_name);
+		}
+		parent->add_child(mesh_instance);
 		mesh_instance->set_owner(m_loader->get_owner());
-
-		// Find mesh origin
-		mesh_instance->set_position(center);
 
 		// Create mesh
 		auto mesh = create_mesh_from_surface(surf);
