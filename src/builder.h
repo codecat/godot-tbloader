@@ -5,6 +5,7 @@
 
 #include <godot_cpp/classes/file.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
+#include <godot_cpp/classes/mesh.hpp>
 
 #include <map_parser.h>
 #include <geo_generator.h>
@@ -30,9 +31,13 @@ public:
 	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo);
 	virtual void build_entity(int idx, LMEntity& ent, const String& classname);
 	virtual void build_entity_light(int idx, LMEntity& ent);
+	virtual void build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo);
 
 protected:
 	Vector3 lm_transform(const vec3& v);
+
+	Vector3 get_origin_from_surface(LMSurface& surf);
+	Ref<Mesh> create_mesh_from_surface(LMSurface& surf, const Vector3& origin = Vector3());
 
 protected:
 	static String texture_path(const char* name);

@@ -1,10 +1,8 @@
 #include <builders/mesh_builder.h>
 
-#include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
 
 #include <tb_loader.h>
-#include <surface_gatherer.h>
 
 MeshBuilder::MeshBuilder(TBLoader* loader)
 	: Builder(loader)
@@ -62,64 +60,19 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent)
 		m_loader->add_child(mesh_instance);
 		mesh_instance->set_owner(m_loader->get_owner());
 
-		PackedVector3Array vertices;
-		PackedFloat32Array tangents;
-		PackedVector3Array normals;
-		PackedVector2Array uvs;
-		PackedInt32Array indices;
-
 		// Find mesh origin
-		Vector3 vertex_min, vertex_max;
-		bool has_vertex_min = false;
-
-		for (int k = 0; k < surf.vertex_count; k++) {
-			auto& v = surf.vertices[k];
-
-			Vector3 vertex = lm_transform(v.vertex);
-			if (!has_vertex_min || vertex.length_squared() < vertex_min.length_squared()) {
-				vertex_min = vertex;
-				has_vertex_min = true;
-			}
-			if (vertex.length_squared() > vertex_max.length_squared()) {
-				vertex_max = vertex;
-			}
-		}
-
-		Vector3 origin = vertex_min + (vertex_max - vertex_min) / 2;
+		Vector3 origin = get_origin_from_surface(surf);
 		mesh_instance->set_position(origin + center);
 
-		// Add all vertices minus origin
-		for (int k = 0; k < surf.vertex_count; k++) {
-			auto& v = surf.vertices[k];
-
-			vertices.push_back(lm_transform(v.vertex) - origin);
-			tangents.push_back(v.tangent.y);
-			tangents.push_back(v.tangent.z);
-			tangents.push_back(v.tangent.x);
-			tangents.push_back(v.tangent.w);
-			normals.push_back(Vector3(v.normal.y, v.normal.z, v.normal.x));
-			uvs.push_back(Vector2(v.uv.u, v.uv.v));
-		}
-
-		// Add all indices
-		for (int k = 0; k < surf.index_count; k++) {
-			indices.push_back(surf.indices[k]);
-		}
-
-		Array arrays;
-		arrays.resize(Mesh::ARRAY_MAX);
-		arrays[Mesh::ARRAY_VERTEX] = vertices;
-		arrays[Mesh::ARRAY_TANGENT] = tangents;
-		arrays[Mesh::ARRAY_NORMAL] = normals;
-		arrays[Mesh::ARRAY_TEX_UV] = uvs;
-		arrays[Mesh::ARRAY_INDEX] = indices;
-
 		// Create mesh
-		Ref<ArrayMesh> mesh = memnew(ArrayMesh());
-		mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+		auto mesh = create_mesh_from_surface(surf, origin);
+
+		// Give mesh material
 		if (material != nullptr) {
 			mesh->surface_set_material(0, material);
 		}
+
+		// Give mesh to mesh instance
 		mesh_instance->set_mesh(mesh);
 
 		if (m_loader->m_collision) {

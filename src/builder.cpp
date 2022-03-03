@@ -2,6 +2,10 @@
 
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/omni_light3d.hpp>
+#include <godot_cpp/classes/array_mesh.hpp>
+#include <godot_cpp/classes/area3d.hpp>
+#include <godot_cpp/classes/collision_shape3d.hpp>
+#include <godot_cpp/classes/shape3d.hpp>
 
 #include <tb_loader.h>
 
@@ -83,6 +87,11 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 			return;
 		}
 
+		if (classname == "area") {
+			build_entity_area(idx, ent, m_map->entity_geo[idx]);
+			return;
+		}
+
 		//TODO: More common entities
 	}
 
@@ -107,10 +116,109 @@ void Builder::build_entity_light(int idx, LMEntity& ent)
 	light->set_owner(m_loader->get_owner());
 }
 
+void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
+{
+	Vector3 center = lm_transform(ent.center);
+
+	// Gather surfaces for the area
+	LMSurfaceGatherer surf_gather(m_map);
+	surf_gather.surface_gatherer_set_entity_index_filter(idx);
+	surf_gather.surface_gatherer_run();
+
+	auto& surfs = surf_gather.out_surfaces;
+	if (surfs.surface_count == 0) {
+		return;
+	}
+
+	for (int i = 0; i < surfs.surface_count; i++) {
+		auto& surf = surfs.surfaces[i];
+		if (surf.vertex_count == 0) {
+			continue;
+		}
+
+		// Create the mesh
+		auto origin = get_origin_from_surface(surf);
+		auto mesh = create_mesh_from_surface(surf, origin);
+
+		// Create the area
+		auto area = memnew(Area3D());
+		m_loader->add_child(area);
+		area->set_owner(m_loader->get_owner());
+		area->set_position(origin + center);
+
+		// Create collision shape for the area
+		auto collision_shape = memnew(CollisionShape3D());
+		collision_shape->set_shape(mesh->create_trimesh_shape());
+		area->add_child(collision_shape);
+		collision_shape->set_owner(m_loader->get_owner());
+	}
+}
+
 Vector3 Builder::lm_transform(const vec3& v)
 {
 	vec3 sv = vec3_div_double(v, m_loader->m_inverse_scale);
 	return Vector3(sv.y, sv.z, sv.x);
+}
+
+Vector3 Builder::get_origin_from_surface(LMSurface& surf)
+{
+	Vector3 vertex_min, vertex_max;
+	bool has_vertex_min = false;
+
+	for (int k = 0; k < surf.vertex_count; k++) {
+		auto& v = surf.vertices[k];
+
+		Vector3 vertex = lm_transform(v.vertex);
+		if (!has_vertex_min || vertex.length_squared() < vertex_min.length_squared()) {
+			vertex_min = vertex;
+			has_vertex_min = true;
+		}
+		if (vertex.length_squared() > vertex_max.length_squared()) {
+			vertex_max = vertex;
+		}
+	}
+
+	return vertex_min + (vertex_max - vertex_min) / 2;
+}
+
+Ref<Mesh> Builder::create_mesh_from_surface(LMSurface& surf, const Vector3& origin)
+{
+	PackedVector3Array vertices;
+	PackedFloat32Array tangents;
+	PackedVector3Array normals;
+	PackedVector2Array uvs;
+	PackedInt32Array indices;
+
+	// Add all vertices minus origin
+	for (int k = 0; k < surf.vertex_count; k++) {
+		auto& v = surf.vertices[k];
+
+		vertices.push_back(lm_transform(v.vertex) - origin);
+		tangents.push_back(v.tangent.y);
+		tangents.push_back(v.tangent.z);
+		tangents.push_back(v.tangent.x);
+		tangents.push_back(v.tangent.w);
+		normals.push_back(Vector3(v.normal.y, v.normal.z, v.normal.x));
+		uvs.push_back(Vector2(v.uv.u, v.uv.v));
+	}
+
+	// Add all indices
+	for (int k = 0; k < surf.index_count; k++) {
+		indices.push_back(surf.indices[k]);
+	}
+
+	Array arrays;
+	arrays.resize(Mesh::ARRAY_MAX);
+	arrays[Mesh::ARRAY_VERTEX] = vertices;
+	arrays[Mesh::ARRAY_TANGENT] = tangents;
+	arrays[Mesh::ARRAY_NORMAL] = normals;
+	arrays[Mesh::ARRAY_TEX_UV] = uvs;
+	arrays[Mesh::ARRAY_INDEX] = indices;
+
+	// Create mesh
+	Ref<ArrayMesh> mesh = memnew(ArrayMesh());
+	mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+	return mesh;
 }
 
 String Builder::texture_path(const char* name)
