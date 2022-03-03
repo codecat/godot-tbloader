@@ -1,6 +1,5 @@
 #include <builders/mesh_builder.h>
 
-#include <godot_cpp/classes/mesh_instance3d.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
 
@@ -22,14 +21,17 @@ void MeshBuilder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo
 
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
-		build_texture_mesh(idx, tex.name, lm_transform(ent.center));
+		build_texture_mesh(idx, tex.name, ent);
 	}
 }
 
-void MeshBuilder::build_texture_mesh(int idx, const char* name, const Vector3& center)
+void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent)
 {
 	// Load texture
 	auto res_texture = texture_from_name(name);
+
+	// Get entity properties
+	Vector3 center = lm_transform(ent.center);
 
 	// Create material
 	Ref<StandardMaterial3D> material;

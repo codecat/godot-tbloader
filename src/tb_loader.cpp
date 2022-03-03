@@ -16,6 +16,8 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
 	ClassDB::bind_method(D_METHOD("set_common_entities", "common_entities"), &TBLoader::set_common_entities);
 	ClassDB::bind_method(D_METHOD("get_common_entities"), &TBLoader::get_common_entities);
+	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
+	ClassDB::bind_method(D_METHOD("get_skip_hidden_layers"), &TBLoader::get_skip_hidden_layers);
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
@@ -25,6 +27,7 @@ void TBLoader::_bind_methods()
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "inverse_scale", PROPERTY_HINT_NONE, "Inverse Scale"), "set_inverse_scale", "get_inverse_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "common_entities", PROPERTY_HINT_NONE, "Common Entities"), "set_common_entities", "get_common_entities");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "skip_hidden_layers", PROPERTY_HINT_NONE, "Skip hidden layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
 }
 
 TBLoader::TBLoader()
@@ -73,6 +76,16 @@ void TBLoader::set_common_entities(bool enabled)
 bool TBLoader::get_common_entities()
 {
 	return m_common_entities;
+}
+
+void TBLoader::set_skip_hidden_layers(bool enabled)
+{
+	m_skip_hidden_layers = enabled;
+}
+
+bool TBLoader::get_skip_hidden_layers()
+{
+	return m_skip_hidden_layers;
 }
 
 void TBLoader::clear()

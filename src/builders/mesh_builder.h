@@ -2,6 +2,8 @@
 
 #include <builder.h>
 
+#include <godot_cpp/classes/mesh_instance3d.hpp>
+
 class MeshBuilder : public Builder
 {
 public:
@@ -11,5 +13,5 @@ public:
 	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo) override;
 
 protected:
-	virtual void build_texture_mesh(int idx, const char* name, const Vector3& center);
+	virtual void build_texture_mesh(int idx, const char* name, LMEntity& ent);
 };

@@ -66,6 +66,13 @@ void Builder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo)
 void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 {
 	if (classname == "worldspawn" || classname == "func_group") {
+		// Skip worldspawn if the layer is hidden and the "skip hidden layers" option is checked
+		if (m_loader->m_skip_hidden_layers) {
+			bool is_visible = (ent.get_property_int("_tb_layer_hidden", 0) == 0);
+			if (!is_visible) {
+				return;
+			}
+		}
 		build_worldspawn(idx, ent, m_map->entity_geo[idx]);
 		return;
 	}
