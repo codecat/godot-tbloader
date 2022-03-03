@@ -265,9 +265,15 @@ void LMMapParser::token(const char *buf) {
 				current_length = strlen(current_property);
 			};
 
-			if (is_first || is_last) {
+			if (!is_first && is_last) {
+				current_property = (char *)realloc(current_property, current_length + buf_length + 2);
+				current_property[current_length] = ' ';
+				memcpy(&current_property[current_length + 1], buf, buf_length + 1);
+
+			} else if (is_first || is_last) {
 				current_property = (char *)realloc(current_property, current_length + buf_length + 1);
 				memcpy(&current_property[current_length], buf, buf_length + 1);
+
 			} else {
 				current_property = (char *)realloc(current_property, current_length + buf_length + 3);
 				current_property[current_length] = ' ';
