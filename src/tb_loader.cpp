@@ -14,8 +14,8 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_inverse_scale"), &TBLoader::get_inverse_scale);
 	ClassDB::bind_method(D_METHOD("set_collision", "collision"), &TBLoader::set_collision);
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
-	ClassDB::bind_method(D_METHOD("set_common_entities", "common_entities"), &TBLoader::set_common_entities);
-	ClassDB::bind_method(D_METHOD("get_common_entities"), &TBLoader::get_common_entities);
+	ClassDB::bind_method(D_METHOD("set_entity_common", "common_entities"), &TBLoader::set_entity_common);
+	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
 	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
 	ClassDB::bind_method(D_METHOD("get_skip_hidden_layers"), &TBLoader::get_skip_hidden_layers);
 
@@ -23,11 +23,16 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
 	ClassDB::bind_method(D_METHOD("build_combined_csg"), &TBLoader::build_combined_csg);
 
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "inverse_scale", PROPERTY_HINT_NONE, "Inverse Scale"), "set_inverse_scale", "get_inverse_scale");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "common_entities", PROPERTY_HINT_NONE, "Common Entities"), "set_common_entities", "get_common_entities");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "skip_hidden_layers", PROPERTY_HINT_NONE, "Skip hidden layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
+	ADD_GROUP("Map", "map_");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map_resource", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "map_inverse_scale", PROPERTY_HINT_NONE, "Inverse Scale"), "set_inverse_scale", "get_inverse_scale");
+
+	ADD_GROUP("Options", "option_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip hidden layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
+
+	ADD_GROUP("Entities", "entity_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "entity_common", PROPERTY_HINT_NONE, "Common Entities"), "set_entity_common", "get_entity_common");
 }
 
 TBLoader::TBLoader()
@@ -68,14 +73,14 @@ bool TBLoader::get_collision()
 	return m_collision;
 }
 
-void TBLoader::set_common_entities(bool enabled)
+void TBLoader::set_entity_common(bool enabled)
 {
-	m_common_entities = enabled;
+	m_entity_common = enabled;
 }
 
-bool TBLoader::get_common_entities()
+bool TBLoader::get_entity_common()
 {
-	return m_common_entities;
+	return m_entity_common;
 }
 
 void TBLoader::set_skip_hidden_layers(bool enabled)

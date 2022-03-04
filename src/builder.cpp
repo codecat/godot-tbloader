@@ -81,7 +81,7 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 		return;
 	}
 
-	if (m_loader->m_common_entities) {
+	if (m_loader->m_entity_common) {
 		if (classname == "light") {
 			build_entity_light(idx, ent);
 			return;

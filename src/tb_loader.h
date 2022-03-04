@@ -19,10 +19,11 @@ class TBLoader : public Node3D
 public:
 	String m_map_path;
 	int m_inverse_scale = 16;
-	bool m_collision = true;
 
-	bool m_common_entities = true;
+	bool m_collision = true;
 	bool m_skip_hidden_layers = true;
+
+	bool m_entity_common = true;
 
 protected:
 	static void _bind_methods();
@@ -40,8 +41,8 @@ public:
 	void set_collision(bool enabled);
 	bool get_collision();
 
-	void set_common_entities(bool enabled);
-	bool get_common_entities();
+	void set_entity_common(bool enabled);
+	bool get_entity_common();
 
 	void set_skip_hidden_layers(bool enabled);
 	bool get_skip_hidden_layers();
