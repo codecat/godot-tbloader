@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title>TBLoader</title>
+<metadata>
+<rdf:RDF>
+<cc:Work rdf:about="">
+<dc:title>TBLoader</dc:title>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<g transform="matrix(.23996 0 0 .24633 -15.301 -26.547)" fill="none">
+<path d="m97.213 109.57-30.357 8.4385-5.37e-4 -5.6e-4 8.3597 29.977 21.989 21.198v8.6e-4l9.36e-4 -5.5e-4 5.35e-4 5.5e-4v-8.6e-4l21.99-21.198 8.356-29.965 0.0192-0.0115zm0 25.412 0.0083 0.5401-0.01402 9e-3zm-0.0083 0.54822 0.0022 8.5e-4 -9.37e-4 0.94463z" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+<path transform="translate(-6.7616,1.2332)" d="m103.97 109.62-29.045 8.0742 29.039 16.766 6e-3 -0.52539 8e-3 0.52539 29.039-16.766z" stop-color="#000000" stroke="#fb8080" stroke-miterlimit="3" stroke-width="3.3" style="-inkscape-stroke:none;font-variation-settings:normal;paint-order:normal"/>
+<path d="m68.168 118.93 29.038 16.766 0.01581 32.214-21.055-20.297zm58.077 0-29.038 16.766-0.01581 32.214 21.055-20.297z" stop-color="#000000" stroke="#fb8080" stroke-miterlimit="3" stroke-width="3.3" style="-inkscape-stroke:none;font-variation-settings:normal;paint-order:normal"/>
+</g>
+</svg>
