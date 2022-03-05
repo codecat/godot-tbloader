@@ -29,10 +29,12 @@ public:
 	vec3 center;
 	enum ENTITY_SPAWN_TYPE spawn_type;
 
+	bool has_property(const char* key);
 	const char* get_property(const char* key, const char* def = "");
 	int get_property_int(const char* key, int def = 0);
 	float get_property_float(const char* key, float def = 0.0f);
 	double get_property_double(const char* key, double def = 0.0);
+	vec2 get_property_vec2(const char* key, const vec2& def = { 0 });
 	vec3 get_property_vec3(const char* key, const vec3& def = { 0 });
 };
 

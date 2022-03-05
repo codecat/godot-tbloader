@@ -20,6 +20,8 @@ void TBLoader::_bind_methods()
 
 	ClassDB::bind_method(D_METHOD("set_entity_common", "entity_common"), &TBLoader::set_entity_common);
 	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
+	ClassDB::bind_method(D_METHOD("set_entity_path", "entity_path"), &TBLoader::set_entity_path);
+	ClassDB::bind_method(D_METHOD("get_entity_path"), &TBLoader::get_entity_path);
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
@@ -31,10 +33,11 @@ void TBLoader::_bind_methods()
 
 	ADD_GROUP("Options", "option_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip hidden layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip Hidden Layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
 
 	ADD_GROUP("Entities", "entity_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "entity_common", PROPERTY_HINT_NONE, "Common Entities"), "set_entity_common", "get_entity_common");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "entity_path", PROPERTY_HINT_DIR, "Entity Path"), "set_entity_path", "get_entity_path");
 }
 
 TBLoader::TBLoader()
@@ -93,6 +96,16 @@ void TBLoader::set_entity_common(bool enabled)
 bool TBLoader::get_entity_common()
 {
 	return m_entity_common;
+}
+
+void TBLoader::set_entity_path(const String& path)
+{
+	m_entity_path = path;
+}
+
+String TBLoader::get_entity_path()
+{
+	return m_entity_path;
 }
 
 void TBLoader::clear()

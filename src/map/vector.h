@@ -26,4 +26,11 @@ vec3 vec3_rotate(const vec3& v, const vec3& axis, double angle);
 
 vec3 vec3_parse(const char* str);
 
+struct vec2 {
+	double x;
+	double y;
+};
+
+vec2 vec2_parse(const char* str);
+
 #endif

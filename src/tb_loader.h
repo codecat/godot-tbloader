@@ -24,6 +24,7 @@ public:
 	bool m_skip_hidden_layers = true;
 
 	bool m_entity_common = true;
+	String m_entity_path = "res://entities";
 
 protected:
 	static void _bind_methods();
@@ -46,6 +47,9 @@ public:
 
 	void set_entity_common(bool enabled);
 	bool get_entity_common();
+
+	void set_entity_path(const String& path);
+	String get_entity_path();
 
 	void clear();
 

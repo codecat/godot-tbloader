@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/area3d.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
 #include <godot_cpp/classes/shape3d.hpp>
+#include <godot_cpp/classes/packed_scene.hpp>
 
 #include <tb_loader.h>
 
@@ -95,7 +96,89 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 		//TODO: More common entities
 	}
 
-	//TODO: Entity callback to GDScript?
+	build_entity_custom(idx, ent, m_map->entity_geo[idx], classname);
+}
+
+void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname)
+{
+	// m_loader->m_entity_path => "res://entities/"
+	// "info_player_start" => "info/player/start.tscn", "info/player_start.tscn", "info_player_start.tscn"
+	// "thing" => "thing.tscn"
+
+	auto resource_loader = ResourceLoader::get_singleton();
+
+	auto arr = classname.split("_");
+	for (int i = 0; i < arr.size(); i++) {
+		String path = m_loader->m_entity_path + "/";
+		for (int j = 0; j < arr.size(); j++) {
+			if (j > 0) {
+				if (j <= i) {
+					path = path + "/";
+				} else {
+					path = path + "_";
+				}
+			}
+			path = path + arr[j];
+		}
+		path = path + ".tscn";
+
+		if (resource_loader->exists(path, "PackedScene")) {
+			Ref<PackedScene> scene = resource_loader->load(path);
+
+			auto instance = scene->instantiate();
+			m_loader->add_child(instance);
+			instance->set_owner(m_loader->get_owner());
+
+			if (instance->is_class("Node3D")) {
+				set_node_transform((Node3D*)instance, ent);
+			}
+
+			for (int j = 0; j < ent.property_count; j++) {
+				auto& prop = ent.properties[j];
+
+				auto var = instance->get(prop.key);
+				switch (var.get_type()) {
+					case Variant::BOOL: instance->set(prop.key, atoi(prop.value) == 1); break;
+					case Variant::INT: instance->set(prop.key, (int64_t)atoll(prop.value)); break;
+					case Variant::FLOAT: instance->set(prop.key, atof(prop.value)); break; //TODO: Locale?
+					case Variant::STRING: instance->set(prop.key, prop.value); break;
+
+					case Variant::STRING_NAME: instance->set(prop.key, StringName(prop.value));
+					case Variant::NODE_PATH: instance->set(prop.key, NodePath(prop.value)); //TODO: More TrenchBroom focused node path conversion?
+
+					case Variant::VECTOR2: {
+						vec2 v = vec2_parse(prop.value);
+						instance->set(prop.key, Vector2(v.x, v.y));
+						break;
+					}
+					case Variant::VECTOR2I: {
+						vec2 v = vec2_parse(prop.value);
+						instance->set(prop.key, Vector2i((int)v.x, (int)v.y));
+						break;
+					}
+					case Variant::VECTOR3: {
+						vec3 v = vec3_parse(prop.value);
+						instance->set(prop.key, Vector3(v.x, v.y, v.z));
+						break;
+					}
+					case Variant::VECTOR3I: {
+						vec3 v = vec3_parse(prop.value);
+						instance->set(prop.key, Vector3i((int)v.x, (int)v.y, (int)v.z));
+						break;
+					}
+
+					case Variant::COLOR: {
+						vec3 v = vec3_parse(prop.value);
+						instance->set(prop.key, Color(v.x / 255.0f, v.y / 255.0f, v.z / 255.0f));
+						break;
+					}
+				}
+			}
+			return;
+		}
+	}
+
+	UtilityFunctions::printerr("Path to entity resource could not be resolved: ", classname);
 }
 
 void Builder::build_entity_light(int idx, LMEntity& ent)
@@ -107,7 +190,7 @@ void Builder::build_entity_light(int idx, LMEntity& ent)
 	light->set_param(Light3D::PARAM_ENERGY, ent.get_property_double("energy", 1));
 	light->set_param(Light3D::PARAM_ATTENUATION, ent.get_property_double("attenuation", 1));
 	light->set_param(Light3D::PARAM_SPECULAR, ent.get_property_double("specular", 0.5));
-	light->set_position(lm_transform(ent.get_property_vec3("origin")));
+	set_node_transform(light, ent);
 
 	vec3 color = ent.get_property_vec3("light_color", { 255, 255, 255 });
 	light->set_color(Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f));
@@ -151,6 +234,49 @@ void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
 		area->add_child(collision_shape);
 		collision_shape->set_owner(m_loader->get_owner());
 	}
+}
+
+void Builder::set_node_transform(Node3D* node, LMEntity& ent)
+{
+	// Position
+	node->set_position(lm_transform(ent.get_property_vec3("origin")));
+
+	// Rotation
+	double pitch = 0;
+	double yaw = 0;
+	double roll = 0;
+
+	if (ent.has_property("angle")) {
+		// "angle" is yaw rotation only
+		yaw = ent.get_property_double("angle");
+	} else if (ent.has_property("angles")) {
+		// "angles" is "pitch yaw roll"
+		vec3 angles = ent.get_property_vec3("angles");
+		pitch = angles.x;
+		yaw = angles.y;
+		roll = angles.z;
+	} else if (ent.has_property("mangle")) {
+		vec3 mangle = ent.get_property_vec3("mangle");
+		// "mangle" depends on whether the classname starts with "light"
+		const char* classname = ent.get_property("classname");
+		if (strstr(classname, "light") == classname) {
+			// "yaw pitch roll", if classname starts with "light"
+			yaw = mangle.x;
+			pitch = mangle.y;
+			roll = mangle.z;
+		} else {
+			// "pitch yaw roll", just like "angles"
+			pitch = mangle.x;
+			yaw = mangle.y;
+			roll = mangle.z;
+		}
+	}
+
+	node->set_rotation(Vector3(
+		Math::deg2rad(-pitch),
+		Math::deg2rad(yaw + 180),
+		Math::deg2rad(roll)
+	));
 }
 
 Vector3 Builder::lm_transform(const vec3& v)

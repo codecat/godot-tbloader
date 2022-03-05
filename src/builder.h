@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/file.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/classes/mesh.hpp>
+#include <godot_cpp/classes/node3d.hpp>
 
 #include <map_parser.h>
 #include <geo_generator.h>
@@ -29,9 +30,13 @@ public:
 	virtual void build_map();
 
 	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo);
+
 	virtual void build_entity(int idx, LMEntity& ent, const String& classname);
+	virtual void build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
 	virtual void build_entity_light(int idx, LMEntity& ent);
 	virtual void build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo);
+
+	virtual void set_node_transform(Node3D* node, LMEntity& ent);
 
 protected:
 	Vector3 lm_transform(const vec3& v);

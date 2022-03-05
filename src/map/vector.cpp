@@ -94,7 +94,7 @@ vec3 vec3_div_double(const vec3& lhs, const double rhs) {
 };
 
 vec3 vec3_parse(const char* str) {
-	vec3 ret;
+	vec3 ret = { 0 };
 
 	ret.x = atof(str);
 	const char* token = strchr(str, ' ');
@@ -107,4 +107,17 @@ vec3 vec3_parse(const char* str) {
 	}
 
 	return ret;
-};
+}
+
+vec2 vec2_parse(const char* str)
+{
+	vec2 ret = { 0 };
+
+	ret.x = atof(str);
+	const char* token = strchr(str, ' ');
+	if (token != nullptr) {
+		ret.y = atof(token + 1);
+	}
+
+	return ret;
+}
