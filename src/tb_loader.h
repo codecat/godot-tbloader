@@ -41,11 +41,11 @@ public:
 	void set_collision(bool enabled);
 	bool get_collision();
 
-	void set_entity_common(bool enabled);
-	bool get_entity_common();
-
 	void set_skip_hidden_layers(bool enabled);
 	bool get_skip_hidden_layers();
+
+	void set_entity_common(bool enabled);
+	bool get_entity_common();
 
 	void clear();
 

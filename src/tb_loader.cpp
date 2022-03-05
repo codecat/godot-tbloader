@@ -12,12 +12,14 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_map"), &TBLoader::get_map);
 	ClassDB::bind_method(D_METHOD("set_inverse_scale", "inverse_scale"), &TBLoader::set_inverse_scale);
 	ClassDB::bind_method(D_METHOD("get_inverse_scale"), &TBLoader::get_inverse_scale);
+
 	ClassDB::bind_method(D_METHOD("set_collision", "collision"), &TBLoader::set_collision);
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
-	ClassDB::bind_method(D_METHOD("set_entity_common", "common_entities"), &TBLoader::set_entity_common);
-	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
 	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
 	ClassDB::bind_method(D_METHOD("get_skip_hidden_layers"), &TBLoader::get_skip_hidden_layers);
+
+	ClassDB::bind_method(D_METHOD("set_entity_common", "entity_common"), &TBLoader::set_entity_common);
+	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
@@ -73,16 +75,6 @@ bool TBLoader::get_collision()
 	return m_collision;
 }
 
-void TBLoader::set_entity_common(bool enabled)
-{
-	m_entity_common = enabled;
-}
-
-bool TBLoader::get_entity_common()
-{
-	return m_entity_common;
-}
-
 void TBLoader::set_skip_hidden_layers(bool enabled)
 {
 	m_skip_hidden_layers = enabled;
@@ -91,6 +83,16 @@ void TBLoader::set_skip_hidden_layers(bool enabled)
 bool TBLoader::get_skip_hidden_layers()
 {
 	return m_skip_hidden_layers;
+}
+
+void TBLoader::set_entity_common(bool enabled)
+{
+	m_entity_common = enabled;
+}
+
+bool TBLoader::get_entity_common()
+{
+	return m_entity_common;
 }
 
 void TBLoader::clear()
