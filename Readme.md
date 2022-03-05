@@ -16,10 +16,36 @@ fork is made as an Engine Module, which requires recompiling the entire engine.
 If you're already using Qodot on Godot 3, there's probably not much reason for you to use this. It
 is also not backwards compatible with Qodot, and probably does a few things differently.
 
+# Entities
+The following brush entities are supported by default:
+
+* `worldspawn` and `func_group`: Mesh instance
+* `area`: `Area3D`
+
+The following point entities are supported by default:
+* `light`: `OmniLight3D`
+
+## Custom entities
+You can make custom entities as well. This works by loading and instantiating a `PackedScene` object
+based on the class name. For example, the class name `foo_bar_foobar` will try to load one of the
+following in this order:
+
+* `res://entities/foo_bar_foobar.tscn`
+* `res://entities/foo/bar_foobar.tscn`
+* `res://entities/foo/bar/foobar.tscn`
+
+The first resource it finds will be loaded and instantiated. The root for this (`res://entities` by
+default) can be changed in the `TBLoader` node properties.
+
+Any properties set on the entity will be set directly on the instantiated node using
+[`_set`](https://docs.godotengine.org/en/latest/classes/class_object.html?highlight=object#class-object-method-set)
+and [`_get`](https://docs.godotengine.org/en/latest/classes/class_object.html?highlight=object#class-object-method-get).
+The getter is used first to determine the type of the property.
+
 # TrenchBroom game config
 The `tb-gameconfig` folder contains a game configuration for this addon. This includes a simple FGD
 which will have some common entities that create Godot nodes. Simply place the files in a folder
-called `Godot` inside the `games` folder of your TrenchBroom installation. So you would have
+called `Godot` inside the `games` folder of your TrenchBroom installation, so you would have
 `games/Godot/<files>`.
 
 # Credits
