@@ -19,11 +19,11 @@ is also not backwards compatible with Qodot, and probably does a few things diff
 # Entities
 The following brush entities are supported by default:
 
-* `worldspawn` and `func_group`: Mesh instance
-* `area`: `Area3D`
+* `worldspawn` and `func_group`: Mesh instances and collision shapes
+* `area`: [`Area3D`](https://docs.godotengine.org/en/latest/classes/class_area3d.html)
 
 The following point entities are supported by default:
-* `light`: `OmniLight3D`
+* `light`: [`OmniLight3D`](https://docs.godotengine.org/en/latest/classes/class_omnilight3d.html)
 
 ## Custom entities
 You can make custom entities as well. This works by loading and instantiating a `PackedScene` object
@@ -38,8 +38,8 @@ The first resource it finds will be loaded and instantiated. The root for this (
 default) can be changed in the `TBLoader` node properties.
 
 Any properties set on the entity will be set directly on the instantiated node using
-[`_set`](https://docs.godotengine.org/en/latest/classes/class_object.html?highlight=object#class-object-method-set)
-and [`_get`](https://docs.godotengine.org/en/latest/classes/class_object.html?highlight=object#class-object-method-get).
+[`_set`](https://docs.godotengine.org/en/latest/classes/class_object.html#class-object-method-set)
+and [`_get`](https://docs.godotengine.org/en/latest/classes/class_object.html#class-object-method-get).
 The getter is used first to determine the type of the property.
 
 # TrenchBroom game config
