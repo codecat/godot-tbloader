@@ -20,6 +20,8 @@ public:
 	String m_map_path;
 	int m_inverse_scale = 16;
 
+	bool m_lighting_unwrap_uv2 = false;
+
 	bool m_collision = true;
 	bool m_skip_hidden_layers = true;
 
@@ -38,6 +40,9 @@ public:
 
 	void set_inverse_scale(int scale);
 	int get_inverse_scale();
+
+	void set_lighting_unwrap_uv2(bool enabled);
+	bool get_lighting_unwrap_uv2();
 
 	void set_collision(bool enabled);
 	bool get_collision();

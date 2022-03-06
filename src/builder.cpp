@@ -2,7 +2,6 @@
 
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/omni_light3d.hpp>
-#include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/area3d.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
 #include <godot_cpp/classes/shape3d.hpp>
@@ -285,7 +284,7 @@ Vector3 Builder::lm_transform(const vec3& v)
 	return Vector3(sv.y, sv.z, sv.x);
 }
 
-Ref<Mesh> Builder::create_mesh_from_surface(LMSurface& surf)
+Ref<ArrayMesh> Builder::create_mesh_from_surface(LMSurface& surf)
 {
 	PackedVector3Array vertices;
 	PackedFloat32Array tangents;

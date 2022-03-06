@@ -5,7 +5,7 @@
 
 #include <godot_cpp/classes/file.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
-#include <godot_cpp/classes/mesh.hpp>
+#include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/node3d.hpp>
 
 #include <map_parser.h>
@@ -41,7 +41,7 @@ public:
 protected:
 	Vector3 lm_transform(const vec3& v);
 
-	Ref<Mesh> create_mesh_from_surface(LMSurface& surf);
+	Ref<ArrayMesh> create_mesh_from_surface(LMSurface& surf);
 
 protected:
 	static String texture_path(const char* name);

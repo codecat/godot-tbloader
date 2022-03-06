@@ -13,6 +13,9 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("set_inverse_scale", "inverse_scale"), &TBLoader::set_inverse_scale);
 	ClassDB::bind_method(D_METHOD("get_inverse_scale"), &TBLoader::get_inverse_scale);
 
+	ClassDB::bind_method(D_METHOD("set_lighting_unwrap_uv2", "lighting_unwrap_uv2"), &TBLoader::set_lighting_unwrap_uv2);
+	ClassDB::bind_method(D_METHOD("get_lighting_unwrap_uv2"), &TBLoader::get_lighting_unwrap_uv2);
+
 	ClassDB::bind_method(D_METHOD("set_collision", "collision"), &TBLoader::set_collision);
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
 	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
@@ -30,6 +33,9 @@ void TBLoader::_bind_methods()
 	ADD_GROUP("Map", "map_");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map_resource", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "map_inverse_scale", PROPERTY_HINT_NONE, "Inverse Scale"), "set_inverse_scale", "get_inverse_scale");
+
+	ADD_GROUP("Lighting", "lighting_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "lighting_unwrap_uv2", PROPERTY_HINT_NONE, "Unwrap UV2"), "set_lighting_unwrap_uv2", "get_lighting_unwrap_uv2");
 
 	ADD_GROUP("Options", "option_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
@@ -66,6 +72,16 @@ void TBLoader::set_inverse_scale(int scale)
 int TBLoader::get_inverse_scale()
 {
 	return m_inverse_scale;
+}
+
+void TBLoader::set_lighting_unwrap_uv2(bool enabled)
+{
+	m_lighting_unwrap_uv2 = enabled;
+}
+
+bool TBLoader::get_lighting_unwrap_uv2()
+{
+	return m_lighting_unwrap_uv2;
 }
 
 void TBLoader::set_collision(bool enabled)

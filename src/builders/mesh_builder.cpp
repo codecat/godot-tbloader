@@ -100,6 +100,13 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent, N
 		// Give mesh to mesh instance
 		mesh_instance->set_mesh(mesh);
 
+		// Unwrap UV2's if needed
+		if (m_loader->m_lighting_unwrap_uv2) {
+			mesh->lightmap_unwrap(mesh_instance->get_global_transform(), 0.05);
+			mesh_instance->set_gi_mode(GeometryInstance3D::GI_MODE_STATIC);
+		}
+
+		// Create collisions if needed
 		if (m_loader->m_collision) {
 			//TODO: Experiment with the other colliders
 			mesh_instance->create_trimesh_collision();
