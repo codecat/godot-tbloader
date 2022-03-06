@@ -1,8 +1,13 @@
+@baseclass = Angle [
+	// https://github.com/TrenchBroom/TrenchBroom/issues/3827
+	angles(string) : "Pitch Yaw Roll" : "0 0 0"
+]
+
 @SolidClass = worldspawn : "World entity" []
 
 @SolidClass = area : "Area" []
 
-@PointClass size(-16 -16 -16, 16 16 16) color(0 255 0) = info_player_start : "Player start" []
+@PointClass base(Angle) size(-16 -16 -16, 16 16 16) color(0 255 0) = player : "Player" []
 
 @PointClass size(-4 -4 -4, 4 4 4) color(255 255 0) = light : "Light" [
 	range(float) : "Range" : 10
