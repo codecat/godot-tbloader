@@ -129,7 +129,7 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 			instance->set_owner(m_loader->get_owner());
 
 			if (instance->is_class("Node3D")) {
-				set_node_transform((Node3D*)instance, ent);
+				set_node_common((Node3D*)instance, ent);
 			}
 
 			for (int j = 0; j < ent.property_count; j++) {
@@ -189,7 +189,7 @@ void Builder::build_entity_light(int idx, LMEntity& ent)
 	light->set_param(Light3D::PARAM_ENERGY, ent.get_property_double("energy", 1));
 	light->set_param(Light3D::PARAM_ATTENUATION, ent.get_property_double("attenuation", 1));
 	light->set_param(Light3D::PARAM_SPECULAR, ent.get_property_double("specular", 0.5));
-	set_node_transform(light, ent);
+	set_node_common(light, ent);
 
 	vec3 color = ent.get_property_vec3("light_color", { 255, 255, 255 });
 	light->set_color(Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f));
@@ -235,8 +235,14 @@ void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
 	}
 }
 
-void Builder::set_node_transform(Node3D* node, LMEntity& ent)
+void Builder::set_node_common(Node3D* node, LMEntity& ent)
 {
+	// Target name
+	auto targetname = ent.get_property("targetname", nullptr);
+	if (targetname != nullptr) {
+		node->set_name(targetname);
+	}
+
 	// Position
 	node->set_position(lm_transform(ent.get_property_vec3("origin")));
 

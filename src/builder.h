@@ -36,7 +36,7 @@ public:
 	virtual void build_entity_light(int idx, LMEntity& ent);
 	virtual void build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo);
 
-	virtual void set_node_transform(Node3D* node, LMEntity& ent);
+	virtual void set_node_common(Node3D* node, LMEntity& ent);
 
 protected:
 	Vector3 lm_transform(const vec3& v);
