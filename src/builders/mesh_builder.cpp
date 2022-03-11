@@ -62,6 +62,9 @@ void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent, N
 	if (res_texture != nullptr) {
 		material = Ref<StandardMaterial3D>(memnew(StandardMaterial3D()));
 		material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
+		if (m_loader->m_filter_nearest) {
+			material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
+		}
 	}
 
 	// Gather surfaces for this texture

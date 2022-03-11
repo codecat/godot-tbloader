@@ -8,18 +8,20 @@
 
 void TBLoader::_bind_methods()
 {
-	ClassDB::bind_method(D_METHOD("set_map", "path"), &TBLoader::set_map);
+	ClassDB::bind_method(D_METHOD("set_map", "map_resource"), &TBLoader::set_map);
 	ClassDB::bind_method(D_METHOD("get_map"), &TBLoader::get_map);
-	ClassDB::bind_method(D_METHOD("set_inverse_scale", "inverse_scale"), &TBLoader::set_inverse_scale);
+	ClassDB::bind_method(D_METHOD("set_inverse_scale", "map_inverse_scale"), &TBLoader::set_inverse_scale);
 	ClassDB::bind_method(D_METHOD("get_inverse_scale"), &TBLoader::get_inverse_scale);
 
 	ClassDB::bind_method(D_METHOD("set_lighting_unwrap_uv2", "lighting_unwrap_uv2"), &TBLoader::set_lighting_unwrap_uv2);
 	ClassDB::bind_method(D_METHOD("get_lighting_unwrap_uv2"), &TBLoader::get_lighting_unwrap_uv2);
 
-	ClassDB::bind_method(D_METHOD("set_collision", "collision"), &TBLoader::set_collision);
+	ClassDB::bind_method(D_METHOD("set_collision", "option_collision"), &TBLoader::set_collision);
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
-	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
+	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "option_skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
 	ClassDB::bind_method(D_METHOD("get_skip_hidden_layers"), &TBLoader::get_skip_hidden_layers);
+	ClassDB::bind_method(D_METHOD("set_filter_nearest", "option_filter_nearest"), &TBLoader::set_filter_nearest);
+	ClassDB::bind_method(D_METHOD("get_filter_nearest"), &TBLoader::get_filter_nearest);
 
 	ClassDB::bind_method(D_METHOD("set_entity_common", "entity_common"), &TBLoader::set_entity_common);
 	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
@@ -40,6 +42,7 @@ void TBLoader::_bind_methods()
 	ADD_GROUP("Options", "option_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip Hidden Layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_filter_nearest", PROPERTY_HINT_NONE, "Texture Filter Nearest"), "set_filter_nearest", "get_filter_nearest");
 
 	ADD_GROUP("Entities", "entity_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "entity_common", PROPERTY_HINT_NONE, "Common Entities"), "set_entity_common", "get_entity_common");
@@ -102,6 +105,16 @@ void TBLoader::set_skip_hidden_layers(bool enabled)
 bool TBLoader::get_skip_hidden_layers()
 {
 	return m_skip_hidden_layers;
+}
+
+void TBLoader::set_filter_nearest(bool enabled)
+{
+	m_filter_nearest = enabled;
+}
+
+bool TBLoader::get_filter_nearest()
+{
+	return m_filter_nearest;
 }
 
 void TBLoader::set_entity_common(bool enabled)
