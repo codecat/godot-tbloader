@@ -14,10 +14,12 @@ env = SConscript("godot-cpp/SConstruct")
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 env.Append(CPPPATH=["src/", "src/map/"])
-env.Append(LINKFLAGS=["/DEBUG"])
 sources = Glob("src/*.cpp")
 sources += Glob("src/builders/*.cpp")
 sources += Glob("src/map/*.cpp")
+
+if env["platform"] == "windows":
+	env.Append(LINKFLAGS=["/DEBUG"])
 
 if env["platform"] == "osx":
 	library = env.SharedLibrary(
