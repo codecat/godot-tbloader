@@ -9,6 +9,7 @@
 #include <godot_cpp/classes/control.hpp>
 
 #include <builder.h>
+#include <cstring>
 
 using namespace godot;
 
