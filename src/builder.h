@@ -42,7 +42,8 @@ public:
 
 protected:
 	Vector3 lm_transform(const vec3& v);
-
+	
+	void add_collider_from_mesh(Area3D* area, Ref<ArrayMesh>& mesh);
 	Ref<ArrayMesh> create_mesh_from_surface(LMSurface& surf);
 
 protected:

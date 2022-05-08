@@ -91,7 +91,6 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 			build_entity_area(idx, ent, m_map->entity_geo[idx]);
 			return;
 		}
-		
 
 		//TODO: More common entities
 	}
@@ -210,7 +209,7 @@ void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
 	LMSurfaceGatherer surf_gather(m_map);
 	surf_gather.surface_gatherer_set_entity_index_filter(idx);
 	surf_gather.surface_gatherer_run();
-	
+
 	auto& surfs = surf_gather.out_surfaces;
 	if (surfs.surface_count == 0) {
 		return;
@@ -232,10 +231,7 @@ void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
 		area->set_position(center);//origin + center);
 
 		// Create collision shape for the area
-		auto collision_shape = memnew(CollisionShape3D());
-		collision_shape->set_shape(mesh->create_trimesh_shape());
-		area->add_child(collision_shape);
-		collision_shape->set_owner(m_loader->get_owner());
+		add_collider_from_mesh(area, mesh);
 	}
 }
 
@@ -316,12 +312,7 @@ void Builder::set_area_common(int idx, Area3D* area, LMEntity& ent)
 		}
 		// Create the mesh
 		auto mesh = create_mesh_from_surface(surf);
-
-		// Create collision shape for the area
-		auto collision_shape = memnew(CollisionShape3D());
-		collision_shape->set_shape(mesh->create_trimesh_shape());
-		area->add_child(collision_shape);
-		collision_shape->set_owner(m_loader->get_owner());
+		add_collider_from_mesh(area, mesh);
 	}
 }
 
@@ -329,6 +320,14 @@ Vector3 Builder::lm_transform(const vec3& v)
 {
 	vec3 sv = vec3_div_double(v, m_loader->m_inverse_scale);
 	return Vector3(sv.y, sv.z, sv.x);
+}
+
+void Builder::add_collider_from_mesh(Area3D* area, Ref<ArrayMesh>& mesh) 
+{
+	auto collision_shape = memnew(CollisionShape3D());
+	collision_shape->set_shape(mesh->create_trimesh_shape());
+	area->add_child(collision_shape);
+	collision_shape->set_owner(m_loader->get_owner());
 }
 
 Ref<ArrayMesh> Builder::create_mesh_from_surface(LMSurface& surf)
