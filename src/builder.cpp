@@ -91,6 +91,7 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 			build_entity_area(idx, ent, m_map->entity_geo[idx]);
 			return;
 		}
+		
 
 		//TODO: More common entities
 	}
@@ -128,7 +129,10 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 			m_loader->add_child(instance);
 			instance->set_owner(m_loader->get_owner());
 
-			if (instance->is_class("Node3D")) {
+			if (instance->is_class("Area3D")) {
+				set_area_common(idx, (Area3D*)instance, ent);
+			}
+			else if (instance->is_class("Node3D")) {
 				set_node_common((Node3D*)instance, ent);
 			}
 
@@ -206,7 +210,7 @@ void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
 	LMSurfaceGatherer surf_gather(m_map);
 	surf_gather.surface_gatherer_set_entity_index_filter(idx);
 	surf_gather.surface_gatherer_run();
-
+	
 	auto& surfs = surf_gather.out_surfaces;
 	if (surfs.surface_count == 0) {
 		return;
@@ -282,6 +286,43 @@ void Builder::set_node_common(Node3D* node, LMEntity& ent)
 		Math::deg2rad(yaw + 180),
 		Math::deg2rad(roll)
 	));
+}
+
+void Builder::set_area_common(int idx, Area3D* area, LMEntity& ent)
+{
+	auto targetname = ent.get_property("targetname", nullptr);
+	if (targetname != nullptr) {
+		area->set_name(targetname);
+	}
+	
+	Vector3 center = lm_transform(ent.center);
+	area->set_position(center);
+	
+	// Colliders!
+	LMSurfaceGatherer surf_gather(m_map);
+	surf_gather.surface_gatherer_set_entity_index_filter(idx);
+	surf_gather.surface_gatherer_run();
+
+	
+	auto& surfs = surf_gather.out_surfaces;
+	if (surfs.surface_count == 0) {
+		return;
+	}
+
+	for (int i = 0; i < surfs.surface_count; i++) {
+		auto& surf = surfs.surfaces[i];
+		if (surf.vertex_count == 0) {
+			continue;
+		}
+		// Create the mesh
+		auto mesh = create_mesh_from_surface(surf);
+
+		// Create collision shape for the area
+		auto collision_shape = memnew(CollisionShape3D());
+		collision_shape->set_shape(mesh->create_trimesh_shape());
+		area->add_child(collision_shape);
+		collision_shape->set_owner(m_loader->get_owner());
+	}
 }
 
 Vector3 Builder::lm_transform(const vec3& v)

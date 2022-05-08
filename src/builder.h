@@ -7,6 +7,7 @@
 #include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/node3d.hpp>
+#include <godot_cpp/classes/area3d.hpp>
 
 #include <map_parser.h>
 #include <geo_generator.h>
@@ -37,6 +38,7 @@ public:
 	virtual void build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo);
 
 	virtual void set_node_common(Node3D* node, LMEntity& ent);
+	virtual void set_area_common(int idx, Area3D* node, LMEntity& ent);
 
 protected:
 	Vector3 lm_transform(const vec3& v);
