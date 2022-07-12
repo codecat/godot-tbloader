@@ -336,9 +336,27 @@ String Builder::texture_path(const char* name)
 	return String("res://textures/") + name + ".png";
 }
 
+String Builder::material_path(const char* name)
+{
+	//TODO: .material might not always be correct!
+	return String("res://textures/") + name + ".material";
+}
+
 Ref<Texture2D> Builder::texture_from_name(const char* name)
 {
 	auto path = texture_path(name);
+
+	auto resource_loader = ResourceLoader::get_singleton();
+	if (!resource_loader->exists(path)) {
+		return nullptr;
+	}
+
+	return resource_loader->load(path);
+}
+
+Ref<StandardMaterial3D> Builder::material_from_name(const char* name)
+{
+	auto path = material_path(name);
 
 	auto resource_loader = ResourceLoader::get_singleton();
 	if (!resource_loader->exists(path)) {

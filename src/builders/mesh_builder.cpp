@@ -51,21 +51,31 @@ void MeshBuilder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo
 
 void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent, Node3D* parent)
 {
-	// Load texture
-	auto res_texture = texture_from_name(name);
-
-	// Use texture as name for the mesh instance
-	String instance_name = String(name).replace("/", "_");
-
 	// Create material
 	Ref<StandardMaterial3D> material;
-	if (res_texture != nullptr) {
-		material = Ref<StandardMaterial3D>(memnew(StandardMaterial3D()));
-		material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
-		if (m_loader->m_filter_nearest) {
-			material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
-		}
-	}
+
+  // Use name for the mesh instance
+  String instance_name = String(name).replace("/", "_");
+
+	// Attempt to load material
+	auto res_material = material_from_name(name);
+
+  if (res_material != nullptr) {
+    // Set material
+    material = res_material;
+  } else {
+    // Load texture
+    auto res_texture = texture_from_name(name);
+
+    // Create material
+    if (res_texture != nullptr) {
+      material = Ref<StandardMaterial3D>(memnew(StandardMaterial3D()));
+      material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
+      if (m_loader->m_filter_nearest) {
+        material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
+      }
+    }
+  }
 
 	// Gather surfaces for this texture
 	LMSurfaceGatherer surf_gather(m_map);
