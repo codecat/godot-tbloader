@@ -5,6 +5,7 @@
 
 #include <godot_cpp/classes/file.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
+#include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/node3d.hpp>
 
@@ -45,5 +46,7 @@ protected:
 
 protected:
 	static String texture_path(const char* name);
+  static String material_path(const char* name);
 	static Ref<Texture2D> texture_from_name(const char* name);
+	static Ref<Material> material_from_name(const char* name);
 };
