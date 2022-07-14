@@ -1,5 +1,6 @@
 #include <builders/mesh_builder.h>
 
+#include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
 
 #include <tb_loader.h>
@@ -52,28 +53,27 @@ void MeshBuilder::build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo
 void MeshBuilder::build_texture_mesh(int idx, const char* name, LMEntity& ent, Node3D* parent)
 {
 	// Create material
-	Ref<StandardMaterial3D> material;
+	Ref<Material> material;
 
   // Use name for the mesh instance
   String instance_name = String(name).replace("/", "_");
 
 	// Attempt to load material
-	auto res_material = material_from_name(name);
+	material = material_from_name(name);
 
-  if (res_material != nullptr) {
-    // Set material
-    material = res_material;
-  } else {
+  if (material == nullptr) {
     // Load texture
     auto res_texture = texture_from_name(name);
 
     // Create material
     if (res_texture != nullptr) {
-      material = Ref<StandardMaterial3D>(memnew(StandardMaterial3D()));
-      material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
+      
+      Ref<StandardMaterial3D> new_material = memnew(StandardMaterial3D());
+      new_material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
       if (m_loader->m_filter_nearest) {
-        material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
+        new_material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
       }
+      material = new_material;
     }
   }
 

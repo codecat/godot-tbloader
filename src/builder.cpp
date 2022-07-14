@@ -354,7 +354,7 @@ Ref<Texture2D> Builder::texture_from_name(const char* name)
 	return resource_loader->load(path);
 }
 
-Ref<StandardMaterial3D> Builder::material_from_name(const char* name)
+Ref<Material> Builder::material_from_name(const char* name)
 {
 	auto path = material_path(name);
 
