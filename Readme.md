@@ -48,6 +48,11 @@ which will have some common entities that create Godot nodes. Simply place the f
 called `Godot` inside the `games` folder of your TrenchBroom installation, so you would have
 `games/Godot/<files>`.
 
+# Textures
+To see your textures in TrenchBroom, navigate to `Preferences` -> `Godot` -> `Game Path` and set it to your project's root directory. TrenchBroom will be able to see textures in your project. TBLoader will look for your textures in the `res://textures` directory. If you have a material (`rust.material`) in the same folder and with the same name as your texture (`rust.png`), TBLoader will load your material instead.
+
+> Note: This currently only works with textures in `.png` format, and materials in `.material` format
+
 # Credits
 * [Qodot](https://github.com/QodotPlugin/qodot-plugin)
 * [Original libmap](https://github.com/QodotPlugin/libmap)

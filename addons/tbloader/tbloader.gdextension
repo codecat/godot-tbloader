@@ -2,6 +2,6 @@
 entry_symbol = "tbloader_init"
 
 [libraries]
-windows.64 = "bin/tbloader.windows.64.dll"
-linux.64 = "bin/libtbloader.linux.64.so"
+windows.64 = "bin/tbloader.windows.x86_64.dll"
+linux.64 = "bin/libtbloader.linux.x86_64.so"
 macos.64 = "bin/libtbloader.framework"
