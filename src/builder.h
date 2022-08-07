@@ -37,7 +37,7 @@ public:
 	virtual void build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
 	virtual void build_entity_light(int idx, LMEntity& ent);
 	virtual void build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo);
-
+    virtual void build_entity_mesh(int idx, LMEntity &ent, Node3D *parent, bool build_collision);
 	virtual void set_node_common(Node3D* node, LMEntity& ent);
 	virtual void set_area_common(int idx, Area3D* node, LMEntity& ent);
 
@@ -45,7 +45,7 @@ protected:
 	Vector3 lm_transform(const vec3& v);
 	
 	void add_collider_from_mesh(Area3D* area, Ref<ArrayMesh>& mesh);
-	Ref<ArrayMesh> create_mesh_from_surface(LMSurface& surf);
+	void add_surface_to_mesh(LMSurface& surf, Ref<ArrayMesh> mesh);
 
 protected:
 	static String texture_path(const char* name);

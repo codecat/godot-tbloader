@@ -13,5 +13,5 @@ public:
 	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo) override;
 
 protected:
-	virtual void build_texture_mesh(int idx, const char* name, LMEntity& ent, Node3D* parent);
+	virtual void build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, bool build_collision) override;
 };

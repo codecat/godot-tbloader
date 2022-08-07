@@ -132,6 +132,9 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 				set_area_common(idx, (Area3D*)instance, ent);
 			} else if (instance->is_class("Node3D")) {
 				set_node_common((Node3D*)instance, ent);
+				if (ent.brush_count > 0) {
+					build_entity_mesh(idx, ent, (Node3D*)instance, instance->is_class("PhysicsBody3D"));
+				}
 			}
 
 			for (int j = 0; j < ent.property_count; j++) {
@@ -214,24 +217,29 @@ void Builder::build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo)
 		return;
 	}
 
+	// Create the mesh for the collision generation
+	Ref<ArrayMesh> mesh = memnew(ArrayMesh());
+	auto area = memnew(Area3D());
+	
+	// Create the area
+	m_loader->add_child(area);
+	area->set_owner(m_loader->get_owner());
+	area->set_position(center);//origin + center);
+
 	for (int i = 0; i < surfs.surface_count; i++) {
 		auto& surf = surfs.surfaces[i];
 		if (surf.vertex_count == 0) {
 			continue;
 		}
-
-		// Create the mesh
-		auto mesh = create_mesh_from_surface(surf);
-
-		// Create the area
-		auto area = memnew(Area3D());
-		m_loader->add_child(area);
-		area->set_owner(m_loader->get_owner());
-		area->set_position(center);//origin + center);
-
-		// Create collision shape for the area
-		add_collider_from_mesh(area, mesh);
+		// Add surface to the mesh
+		add_surface_to_mesh(surf, mesh);
 	}
+	// Create collision shape for the area
+	add_collider_from_mesh(area, mesh);
+}
+
+void Builder::build_entity_mesh(int idx, LMEntity &ent, Node3D *parent, bool build_collision) {
+
 }
 
 void Builder::set_node_common(Node3D* node, LMEntity& ent)
@@ -243,44 +251,51 @@ void Builder::set_node_common(Node3D* node, LMEntity& ent)
 	}
 
 	// Position
-	node->set_position(lm_transform(ent.get_property_vec3("origin")));
-
-	// Rotation
-	double pitch = 0;
-	double yaw = 0;
-	double roll = 0;
-
-	if (ent.has_property("angle")) {
-		// "angle" is yaw rotation only
-		yaw = ent.get_property_double("angle");
-	} else if (ent.has_property("angles")) {
-		// "angles" is "pitch yaw roll"
-		vec3 angles = ent.get_property_vec3("angles");
-		pitch = angles.x;
-		yaw = angles.y;
-		roll = angles.z;
-	} else if (ent.has_property("mangle")) {
-		vec3 mangle = ent.get_property_vec3("mangle");
-		// "mangle" depends on whether the classname starts with "light"
-		const char* classname = ent.get_property("classname");
-		if (strstr(classname, "light") == classname) {
-			// "yaw pitch roll", if classname starts with "light"
-			yaw = mangle.x;
-			pitch = mangle.y;
-			roll = mangle.z;
-		} else {
-			// "pitch yaw roll", just like "angles"
-			pitch = mangle.x;
-			yaw = mangle.y;
-			roll = mangle.z;
-		}
+	if (ent.brush_count > 0) {
+		node->set_position(lm_transform(ent.center));
+	} else {
+		node->set_position(lm_transform(ent.get_property_vec3("origin")));
 	}
 
-	node->set_rotation(Vector3(
-		Math::deg2rad(-pitch),
-		Math::deg2rad(yaw + 180),
-		Math::deg2rad(roll)
-	));
+	// Brush entities shouldn't be rotated as they are already in mesh space
+	if (ent.brush_count == 0) {
+		// Rotation
+		double pitch = 0;
+		double yaw = 0;
+		double roll = 0;
+
+		if (ent.has_property("angle")) {
+			// "angle" is yaw rotation only
+			yaw = ent.get_property_double("angle");
+		} else if (ent.has_property("angles")) {
+			// "angles" is "pitch yaw roll"
+			vec3 angles = ent.get_property_vec3("angles");
+			pitch = angles.x;
+			yaw = angles.y;
+			roll = angles.z;
+		} else if (ent.has_property("mangle")) {
+			vec3 mangle = ent.get_property_vec3("mangle");
+			// "mangle" depends on whether the classname starts with "light"
+			const char* classname = ent.get_property("classname");
+			if (strstr(classname, "light") == classname) {
+				// "yaw pitch roll", if classname starts with "light"
+				yaw = mangle.x;
+				pitch = mangle.y;
+				roll = mangle.z;
+			} else {
+				// "pitch yaw roll", just like "angles"
+				pitch = mangle.x;
+				yaw = mangle.y;
+				roll = mangle.z;
+			}
+		}
+
+		node->set_rotation(Vector3(
+			Math::deg2rad(-pitch),
+			Math::deg2rad(yaw + 180),
+			Math::deg2rad(roll)
+		));
+	}
 }
 
 void Builder::set_area_common(int idx, Area3D* area, LMEntity& ent)
@@ -303,6 +318,8 @@ void Builder::set_area_common(int idx, Area3D* area, LMEntity& ent)
 		return;
 	}
 
+	Ref<ArrayMesh> area_mesh = memnew(ArrayMesh());
+
 	for (int i = 0; i < surfs.surface_count; i++) {
 		auto& surf = surfs.surfaces[i];
 		if (surf.vertex_count == 0) {
@@ -310,9 +327,9 @@ void Builder::set_area_common(int idx, Area3D* area, LMEntity& ent)
 		}
 
 		// Create the mesh
-		auto mesh = create_mesh_from_surface(surf);
-		add_collider_from_mesh(area, mesh);
+		add_surface_to_mesh(surf, area_mesh);
 	}
+	add_collider_from_mesh(area, area_mesh);
 }
 
 Vector3 Builder::lm_transform(const vec3& v)
@@ -329,7 +346,7 @@ void Builder::add_collider_from_mesh(Area3D* area, Ref<ArrayMesh>& mesh)
 	collision_shape->set_owner(m_loader->get_owner());
 }
 
-Ref<ArrayMesh> Builder::create_mesh_from_surface(LMSurface& surf)
+void Builder::add_surface_to_mesh(LMSurface& surf, Ref<ArrayMesh> mesh)
 {
 	PackedVector3Array vertices;
 	PackedFloat32Array tangents;
@@ -363,10 +380,7 @@ Ref<ArrayMesh> Builder::create_mesh_from_surface(LMSurface& surf)
 	arrays[Mesh::ARRAY_TEX_UV] = uvs;
 	arrays[Mesh::ARRAY_INDEX] = indices;
 
-	// Create mesh
-	Ref<ArrayMesh> mesh = memnew(ArrayMesh());
 	mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
-	return mesh;
 }
 
 String Builder::texture_path(const char* name)
