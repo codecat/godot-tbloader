@@ -18,6 +18,24 @@ using namespace godot;
 
 class TBLoader;
 
+enum class ColliderType
+{
+	// Does not create any collider
+	None,
+
+	// Creates a collider from a Mesh (can create a single "merged" convex shape)
+	Mesh,
+
+	// Creates a static collider from a MeshInstance3D (can decompose into multiple convex shapes)
+	Static,
+};
+
+enum class ColliderShape
+{
+	Convex,
+	Concave,
+};
+
 class Builder
 {
 public:
@@ -26,26 +44,28 @@ public:
 
 public:
 	Builder(TBLoader* loader);
-	virtual ~Builder();
+	~Builder();
 
-	virtual void load_map(const String& path);
-	virtual void build_map();
+	void load_map(const String& path);
+	void build_map();
 
-	virtual void build_worldspawn(int idx, LMEntity& ent, LMEntityGeometry& geo);
+	void build_worldspawn(int idx, LMEntity& ent);
+	void build_brush(int idx, Node3D* node, LMEntity& ent);
 
-	virtual void build_entity(int idx, LMEntity& ent, const String& classname);
-	virtual void build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
-	virtual void build_entity_light(int idx, LMEntity& ent);
-	virtual void build_entity_area(int idx, LMEntity& ent, LMEntityGeometry& geo);
+	void build_entity(int idx, LMEntity& ent, const String& classname);
+	void build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
+	void build_entity_light(int idx, LMEntity& ent);
+	void build_entity_area(int idx, LMEntity& ent);
 
-	virtual void set_node_common(Node3D* node, LMEntity& ent);
-	virtual void set_area_common(int idx, Area3D* node, LMEntity& ent);
+	void set_entity_node_common(Node3D* node, LMEntity& ent);
+	void set_entity_brush_common(int idx, Node3D* node, LMEntity& ent);
 
 protected:
 	Vector3 lm_transform(const vec3& v);
-	
-	void add_collider_from_mesh(Area3D* area, Ref<ArrayMesh>& mesh);
+
+	void add_collider_from_mesh(Node3D* area, Ref<ArrayMesh>& mesh, ColliderShape colshape);
 	Ref<ArrayMesh> create_mesh_from_surface(LMSurface& surf);
+	void build_texture_mesh(int idx, const char* name, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape);
 
 protected:
 	static String texture_path(const char* name);

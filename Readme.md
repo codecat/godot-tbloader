@@ -7,7 +7,6 @@ modified [C++ port](https://github.com/EIRTeam/qodot/tree/4.0) of it.
 Qodot is great! It works really well. I initially made TBLoader because I wanted to try several
 different approaches to creating meshes, including creating a bunch of `CSGMesh3D` inside of
 `CSGCombiner3D`, but that ended up being [problematic](https://github.com/godotengine/godot/issues/58637).
-This feature still exists in TBLoader if you want to try it, but it doesn't support texturing.
 
 Since Qodot currently doesn't officially support Godot 4, I decided to take on the challenge and
 rewrite most of it in godot-cpp mostly for fun, but also because the only other existing Godot 4

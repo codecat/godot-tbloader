@@ -3,8 +3,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include <builders/csg_builder.h>
-#include <builders/mesh_builder.h>
+#include <builder.h>
 
 void TBLoader::_bind_methods()
 {
@@ -30,7 +29,6 @@ void TBLoader::_bind_methods()
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
-	ClassDB::bind_method(D_METHOD("build_combined_csg"), &TBLoader::build_combined_csg);
 
 	ADD_GROUP("Map", "map_");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map_resource", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
@@ -150,16 +148,7 @@ void TBLoader::build_meshes()
 {
 	clear();
 
-	MeshBuilder builder(this);
-	builder.load_map(m_map_path);
-	builder.build_map();
-}
-
-void TBLoader::build_combined_csg()
-{
-	clear();
-
-	CSGBuilder builder(this);
+	Builder builder(this);
 	builder.load_map(m_map_path);
 	builder.build_map();
 }

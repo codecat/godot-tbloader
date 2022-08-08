@@ -34,23 +34,13 @@ func create_map_control() -> Control:
 	button_build_meshes.text = "Build Meshes"
 	button_build_meshes.connect("pressed", Callable(self, "build_meshes"))
 
-	var button_build_csg = Button.new()
-	button_build_csg.flat = true
-	button_build_csg.text = "Build Combined CSG"
-	button_build_csg.connect("pressed", Callable(self, "build_combined_csg"))
-
 	var ret = HBoxContainer.new()
 	ret.add_child(button_build_meshes)
-	ret.add_child(button_build_csg)
 	return ret
 
 func build_meshes():
 	var loader = editing_loader.get_ref()
 	loader.build_meshes()
-
-func build_combined_csg():
-	var loader = editing_loader.get_ref()
-	loader.build_combined_csg()
 
 func set_icons(on):
 	var editor_interface = get_editor_interface()
