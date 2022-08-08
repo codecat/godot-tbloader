@@ -321,7 +321,7 @@ Vector3 Builder::lm_transform(const vec3& v)
 	return Vector3(sv.y, sv.z, sv.x);
 }
 
-void Builder::add_collider_from_mesh(Area3D* area, Ref<ArrayMesh>& mesh) 
+void Builder::add_collider_from_mesh(Area3D* area, Ref<ArrayMesh>& mesh)
 {
 	auto collision_shape = memnew(CollisionShape3D());
 	collision_shape->set_shape(mesh->create_trimesh_shape());
