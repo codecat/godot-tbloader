@@ -548,7 +548,7 @@ String Builder::texture_path(const char* name)
 String Builder::material_path(const char* name)
 {
 	auto root_path = String("res://textures/") + name;
-	auto material_path = String();
+	String material_path;
 	
 	File f;
 
