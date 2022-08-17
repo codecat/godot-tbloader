@@ -547,8 +547,18 @@ String Builder::texture_path(const char* name)
 
 String Builder::material_path(const char* name)
 {
-	//TODO: .material might not always be correct!
-	return String("res://textures/") + name + ".material";
+	auto root_path = String("res://textures/") + name;
+	auto material_path = String();
+	
+	File f;
+
+	if (f.file_exists(root_path + ".material")) {
+		material_path = root_path + ".material";
+	} else if (f.file_exists(root_path + ".tres")) {
+		material_path = root_path + ".tres";
+	}
+
+	return material_path;
 }
 
 Ref<Texture2D> Builder::texture_from_name(const char* name)
