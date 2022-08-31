@@ -7,7 +7,6 @@
 #include <godot_cpp/classes/shape3d.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
-#include <godot_cpp/classes/mesh_instance3d.hpp>
 
 #include <tb_loader.h>
 
@@ -80,11 +79,8 @@ void Builder::build_worldspawn(int idx, LMEntity& ent)
 		collider_shape = ColliderShape::Concave;
 	}
 
-	// Create mesh instance for each texture
-	for (int i = 0; i < m_map->texture_count; i++) {
-		auto& tex = m_map->textures[i];
-		build_texture_mesh(idx, tex.name, ent, container_node, collider, collider_shape);
-	}
+	// Create mesh instance for worldspawn
+	build_entity_mesh(idx, ent, container_node, collider, collider_shape);
 
 	// Delete container if we added nothing to it
 	if (container_node->get_child_count() == 0) {
@@ -262,7 +258,8 @@ void Builder::build_entity_area(int idx, LMEntity& ent)
 		}
 
 		// Create the mesh
-		auto mesh = create_mesh_from_surface(surf);
+		Ref<ArrayMesh> mesh = memnew(ArrayMesh());
+		add_surface_to_mesh(mesh, surf);
 
 		// Create the area
 		auto area = memnew(Area3D());
@@ -289,42 +286,45 @@ void Builder::set_entity_node_common(Node3D* node, LMEntity& ent)
 		node->set_position(origin);
 	}
 
-	// Rotation
-	double pitch = 0;
-	double yaw = 0;
-	double roll = 0;
+	// Brush entities shouldn't be rotated as they are already in mesh space
+	if (ent.brush_count == 0) {
+		// Rotation
+		double pitch = 0;
+		double yaw = 0;
+		double roll = 0;
 
-	if (ent.has_property("angle")) {
-		// "angle" is yaw rotation only
-		yaw = ent.get_property_double("angle");
-	} else if (ent.has_property("angles")) {
-		// "angles" is "pitch yaw roll"
-		vec3 angles = ent.get_property_vec3("angles");
-		pitch = angles.x;
-		yaw = angles.y;
-		roll = angles.z;
-	} else if (ent.has_property("mangle")) {
-		vec3 mangle = ent.get_property_vec3("mangle");
-		// "mangle" depends on whether the classname starts with "light"
-		const char* classname = ent.get_property("classname");
-		if (strstr(classname, "light") == classname) {
-			// "yaw pitch roll", if classname starts with "light"
-			yaw = mangle.x;
-			pitch = mangle.y;
-			roll = mangle.z;
-		} else {
-			// "pitch yaw roll", just like "angles"
-			pitch = mangle.x;
-			yaw = mangle.y;
-			roll = mangle.z;
+		if (ent.has_property("angle")) {
+			// "angle" is yaw rotation only
+			yaw = ent.get_property_double("angle");
+		} else if (ent.has_property("angles")) {
+			// "angles" is "pitch yaw roll"
+			vec3 angles = ent.get_property_vec3("angles");
+			pitch = angles.x;
+			yaw = angles.y;
+			roll = angles.z;
+		} else if (ent.has_property("mangle")) {
+			vec3 mangle = ent.get_property_vec3("mangle");
+			// "mangle" depends on whether the classname starts with "light"
+			const char* classname = ent.get_property("classname");
+			if (strstr(classname, "light") == classname) {
+				// "yaw pitch roll", if classname starts with "light"
+				yaw = mangle.x;
+				pitch = mangle.y;
+				roll = mangle.z;
+			} else {
+				// "pitch yaw roll", just like "angles"
+				pitch = mangle.x;
+				yaw = mangle.y;
+				roll = mangle.z;
+			}
 		}
-	}
 
-	node->set_rotation(Vector3(
-		Math::deg2rad(-pitch),
-		Math::deg2rad(yaw + 180),
-		Math::deg2rad(roll)
-	));
+		node->set_rotation(Vector3(
+			Math::deg2rad(-pitch),
+			Math::deg2rad(yaw + 180),
+			Math::deg2rad(roll)
+		));
+	}
 }
 
 void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
@@ -334,7 +334,7 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
 	node->set_position(center);
 
 	// Check what we actually need
-	bool need_visual = node->is_class("VisualInstance3D");
+	bool need_visual = node->is_class("Node3D");
 	ColliderType need_collider = ColliderType::None;
 	ColliderShape need_collider_shape = ColliderShape::Concave;
 
@@ -345,15 +345,9 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
 
 	} else if (node->is_class("CollisionObject3D")) {
 		// If it's not a dynamic body, we can just use a concave trimesh collider
-		need_collider = ColliderType::Static;
+		need_collider = ColliderType::Mesh;
 		need_collider_shape = ColliderShape::Concave;
 	}
-
-	if (node->is_class("PhysicsBody3D")) {
-		need_visual = true;
-	}
-
-	//TODO: Modify visual or collider from ent properties
 
 	// Stop if we don't need to do anything
 	if (!need_visual && need_collider == ColliderType::None) {
@@ -361,38 +355,7 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
 		return;
 	}
 
-	// If we need at least visual, create mesh instance for each texture, and create colliders in the process
-	if (need_visual) {
-		for (int i = 0; i < m_map->texture_count; i++) {
-			auto& tex = m_map->textures[i];
-			build_texture_mesh(idx, tex.name, ent, node, need_collider, need_collider_shape);
-		}
-		return;
-	}
-
-	// We don't need visual, we only need collision
-	if (need_collider != ColliderType::None) {
-		// Gather brush surfaces
-		LMSurfaceGatherer surf_gather(m_map);
-		surf_gather.surface_gatherer_set_entity_index_filter(idx);
-		surf_gather.surface_gatherer_run();
-
-		auto& surfs = surf_gather.out_surfaces;
-		if (surfs.surface_count == 0) {
-			return;
-		}
-
-		for (int i = 0; i < surfs.surface_count; i++) {
-			auto& surf = surfs.surfaces[i];
-			if (surf.vertex_count == 0) {
-				continue;
-			}
-
-			// Create the mesh
-			auto mesh = create_mesh_from_surface(surf);
-			add_collider_from_mesh(node, mesh, need_collider_shape);
-		}
-	}
+	MeshInstance3D* mesh_instance = build_entity_mesh(idx, ent, node, need_collider, need_collider_shape);
 }
 
 Vector3 Builder::lm_transform(const vec3& v)
@@ -411,11 +374,11 @@ void Builder::add_collider_from_mesh(Node3D* node, Ref<ArrayMesh>& mesh, Collide
 
 	auto collision_shape = memnew(CollisionShape3D());
 	collision_shape->set_shape(mesh_shape);
-	node->add_child(collision_shape);
+	node->add_child(collision_shape, true);
 	collision_shape->set_owner(m_loader->get_owner());
 }
 
-Ref<ArrayMesh> Builder::create_mesh_from_surface(LMSurface& surf)
+void Builder::add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf)
 {
 	PackedVector3Array vertices;
 	PackedFloat32Array tangents;
@@ -450,93 +413,100 @@ Ref<ArrayMesh> Builder::create_mesh_from_surface(LMSurface& surf)
 	arrays[Mesh::ARRAY_INDEX] = indices;
 
 	// Create mesh
-	Ref<ArrayMesh> mesh = memnew(ArrayMesh());
 	mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
-	return mesh;
 }
 
-void Builder::build_texture_mesh(int idx, const char* name, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape)
+MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape)
 {
-	// Create material
-	Ref<Material> material;
+	// Create instance name based on entity idx
+	String instance_name = String("entity_{0}_geometry").format(Array::make(idx));
 
-	// Use name for the mesh instance
-	String instance_name = String(name).replace("/", "_");
+	auto mesh_instance = memnew(MeshInstance3D());
 
-	// Attempt to load material
-	material = material_from_name(name);
+	parent->add_child(mesh_instance);
 
-	if (material == nullptr) {
-		// Load texture
-		auto res_texture = texture_from_name(name);
+	mesh_instance->set_owner(m_loader->get_owner());
+	mesh_instance->set_name(instance_name);
+
+	// Create mesh
+	Ref<ArrayMesh> mesh = memnew(ArrayMesh());
+
+	// Give mesh to mesh instance
+	mesh_instance->set_mesh(mesh);
+
+	for (int i = 0; i < m_map->texture_count; i++) {
+		LMTextureData tex = m_map->textures[i];
+		char* name = tex.name;
 
 		// Create material
-		if (res_texture != nullptr) {
-			Ref<StandardMaterial3D> new_material = memnew(StandardMaterial3D());
-			new_material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
-			if (m_loader->m_filter_nearest) {
-				new_material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
+		Ref<Material> material;
+
+		// Attempt to load material
+		material = material_from_name(name);
+
+		if (material == nullptr) {
+			// Load texture
+			auto res_texture = texture_from_name(name);
+
+			// Create material
+			if (res_texture != nullptr) {
+				Ref<StandardMaterial3D> new_material = memnew(StandardMaterial3D());
+				new_material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
+				if (m_loader->m_filter_nearest) {
+					new_material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
+				}
+				material = new_material;
 			}
-			material = new_material;
 		}
-	}
 
-	// Gather surfaces for this texture
-	LMSurfaceGatherer surf_gather(m_map);
-	surf_gather.surface_gatherer_set_entity_index_filter(idx);
-	surf_gather.surface_gatherer_set_texture_filter(name);
-	surf_gather.surface_gatherer_run();
+		// Gather surfaces for this texture
+		LMSurfaceGatherer surf_gather(m_map);
+		surf_gather.surface_gatherer_set_entity_index_filter(idx);
+		surf_gather.surface_gatherer_set_texture_filter(name);
+		surf_gather.surface_gatherer_run();
 
-	auto& surfs = surf_gather.out_surfaces;
-	if (surfs.surface_count == 0) {
-		return;
-	}
-
-	for (int i = 0; i < surfs.surface_count; i++) {
-		auto& surf = surfs.surfaces[i];
-		if (surf.vertex_count == 0) {
+		auto& surfs = surf_gather.out_surfaces;
+		if (surfs.surface_count == 0) {
 			continue;
 		}
 
-		// Create mesh instance
-		auto mesh_instance = memnew(MeshInstance3D());
-		if (instance_name != "") {
-			mesh_instance->set_name(instance_name);
-		}
-		parent->add_child(mesh_instance);
-		mesh_instance->set_owner(m_loader->get_owner());
-
-		// Create mesh
-		auto mesh = create_mesh_from_surface(surf);
-
-		// Give mesh material
-		if (material != nullptr) {
-			mesh->surface_set_material(0, material);
-		}
-
-		// Give mesh to mesh instance
-		mesh_instance->set_mesh(mesh);
-
-		// Unwrap UV2's if needed
-		if (m_loader->m_lighting_unwrap_uv2) {
-			mesh->lightmap_unwrap(mesh_instance->get_global_transform(), 0.05);
-			mesh_instance->set_gi_mode(GeometryInstance3D::GI_MODE_STATIC);
-		}
-
-		// Create collisions if needed
-		switch (coltype) {
-		case ColliderType::Mesh:
-			add_collider_from_mesh(parent, mesh, colshape);
-			break;
-
-		case ColliderType::Static:
-			switch (colshape) {
-			case ColliderShape::Convex: mesh_instance->create_multiple_convex_collisions(); break;
-			case ColliderShape::Concave: mesh_instance->create_trimesh_collision(); break;
+		for (int i = 0; i < surfs.surface_count; i++) {
+			auto& surf = surfs.surfaces[i];
+			if (surf.vertex_count == 0) {
+				continue;
 			}
-			break;
+
+			// Add surface to mesh
+			add_surface_to_mesh(mesh, surf);
+
+			// Give mesh material
+			if (material != nullptr) {
+				mesh->surface_set_material(mesh->get_surface_count() - 1, material);
+			}
 		}
 	}
+
+	// Unwrap UV2's if needed
+	if (m_loader->m_lighting_unwrap_uv2) {
+		mesh->lightmap_unwrap(mesh_instance->get_global_transform(), 0.05);
+		mesh_instance->set_gi_mode(GeometryInstance3D::GI_MODE_STATIC);
+	}
+
+	// Create collisions if needed
+	switch (coltype) {
+	case ColliderType::Mesh:
+		add_collider_from_mesh(parent, mesh, colshape);
+		break;
+
+	case ColliderType::Static:
+		switch (colshape) {
+		case ColliderShape::Convex: mesh_instance->create_multiple_convex_collisions(); break;
+		case ColliderShape::Concave: mesh_instance->create_trimesh_collision(); break;
+		}
+		break;
+	}
+
+	return mesh_instance;
 }
 
 String Builder::texture_path(const char* name)
@@ -549,7 +519,7 @@ String Builder::material_path(const char* name)
 {
 	auto root_path = String("res://textures/") + name;
 	String material_path;
-	
+
 	File f;
 
 	if (f.file_exists(root_path + ".material")) {
