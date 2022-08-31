@@ -355,7 +355,7 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
 		return;
 	}
 
-	MeshInstance3D* mesh_instance = build_entity_mesh(idx, ent, node, need_collider, need_collider_shape);
+	build_entity_mesh(idx, ent, node, need_collider, need_collider_shape);
 }
 
 Vector3 Builder::lm_transform(const vec3& v)

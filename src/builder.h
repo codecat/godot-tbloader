@@ -11,7 +11,6 @@
 #include <godot_cpp/classes/area3d.hpp>
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 
-
 #include <map_parser.h>
 #include <geo_generator.h>
 #include <surface_gatherer.h>
