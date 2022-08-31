@@ -2,3 +2,4 @@ bin/
 *.dblite
 *.obj
 *.os
+.DS_Store
