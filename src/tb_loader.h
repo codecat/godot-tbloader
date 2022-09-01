@@ -8,9 +8,6 @@
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/classes/control.hpp>
 
-#include <builder.h>
-#include <cstring>
-
 using namespace godot;
 
 class TBLoader : public Node3D
@@ -62,6 +59,5 @@ public:
 	String get_entity_path();
 
 	void clear();
-
 	void build_meshes();
 };
