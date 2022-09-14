@@ -69,8 +69,8 @@ protected:
 	MeshInstance3D* build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape);
 
 protected:
-	static String texture_path(const char* name);
+	static String texture_path(const char* name, const String& extension);
   static String material_path(const char* name);
-	static Ref<Texture2D> texture_from_name(const char* name);
+	static Ref<Texture2D> texture_from_name(const char* name, const PackedStringArray& extensions_to_check);
 	static Ref<Material> material_from_name(const char* name);
 };

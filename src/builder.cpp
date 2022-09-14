@@ -30,6 +30,11 @@ void Builder::load_map(const String& path)
 		return;
 	}
 
+	if (m_loader->m_texture_import_extensions.is_empty()) {
+		UtilityFunctions::printerr("No texture import extension(s) provided!");
+		return;
+	}
+
 	// Parse the map from the file
 	f.open(path, File::READ);
 	LMMapParser parser(m_map);
@@ -40,7 +45,7 @@ void Builder::load_map(const String& path)
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
 
-		auto res_texture = texture_from_name(tex.name);
+		auto res_texture = texture_from_name(tex.name, m_loader->m_texture_import_extensions);
 		if (res_texture != nullptr) {
 			tex.width = res_texture->get_width();
 			tex.height = res_texture->get_height();
@@ -446,7 +451,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 		if (material == nullptr) {
 			// Load texture
-			auto res_texture = texture_from_name(name);
+			auto res_texture = texture_from_name(name, m_loader->m_texture_import_extensions);
 
 			// Create material
 			if (res_texture != nullptr) {
@@ -456,6 +461,8 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 					new_material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
 				}
 				material = new_material;
+			} else {
+				UtilityFunctions::printerr(String(tex.name) + " - " + "texture cannot be found with the provided import extension(s)!");
 			}
 		}
 
@@ -509,10 +516,9 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	return mesh_instance;
 }
 
-String Builder::texture_path(const char* name)
+String Builder::texture_path(const char* name, const String& extension)
 {
-	//TODO: .png might not always be correct!
-	return String("res://textures/") + name + ".png";
+	return String("res://textures/") + name + "." + extension;
 }
 
 String Builder::material_path(const char* name)
@@ -531,16 +537,22 @@ String Builder::material_path(const char* name)
 	return material_path;
 }
 
-Ref<Texture2D> Builder::texture_from_name(const char* name)
+Ref<Texture2D> Builder::texture_from_name(const char* name, const PackedStringArray& extensions_to_check)
 {
-	auto path = texture_path(name);
-
 	auto resource_loader = ResourceLoader::get_singleton();
-	if (!resource_loader->exists(path)) {
-		return nullptr;
+	const PackedStringArray& godot_supported_texture_extensions = resource_loader->get_recognized_extensions_for_type("CompressedTexture2D");
+	
+	for (int64_t index(0); index < extensions_to_check.size(); ++index) {
+		const String extension = extensions_to_check[index];
+		if (bool is_extension_supported = godot_supported_texture_extensions.find(extension) != -1) {
+			const String path = texture_path(name, extension);
+			if (resource_loader->exists(path)) {
+				return resource_loader->load(path);
+			}
+		}
 	}
 
-	return resource_loader->load(path);
+	return nullptr;
 }
 
 Ref<Material> Builder::material_from_name(const char* name)

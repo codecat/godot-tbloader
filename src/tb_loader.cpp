@@ -15,12 +15,16 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("set_lighting_unwrap_uv2", "lighting_unwrap_uv2"), &TBLoader::set_lighting_unwrap_uv2);
 	ClassDB::bind_method(D_METHOD("get_lighting_unwrap_uv2"), &TBLoader::get_lighting_unwrap_uv2);
 
+	ClassDB::bind_method(D_METHOD("set_filter_nearest", "texture_filter_nearest"), &TBLoader::set_filter_nearest);
+	ClassDB::bind_method(D_METHOD("get_filter_nearest"), &TBLoader::get_filter_nearest);
+
+	ClassDB::bind_method(D_METHOD("set_texture_import_extensions", "texture_import_extensions"), &TBLoader::set_texture_import_extensions);
+	ClassDB::bind_method(D_METHOD("get_texture_import_extensions"), &TBLoader::get_texture_import_extensions);
+
 	ClassDB::bind_method(D_METHOD("set_collision", "option_collision"), &TBLoader::set_collision);
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
 	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "option_skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
 	ClassDB::bind_method(D_METHOD("get_skip_hidden_layers"), &TBLoader::get_skip_hidden_layers);
-	ClassDB::bind_method(D_METHOD("set_filter_nearest", "option_filter_nearest"), &TBLoader::set_filter_nearest);
-	ClassDB::bind_method(D_METHOD("get_filter_nearest"), &TBLoader::get_filter_nearest);
 
 	ClassDB::bind_method(D_METHOD("set_entity_common", "entity_common"), &TBLoader::set_entity_common);
 	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
@@ -37,10 +41,13 @@ void TBLoader::_bind_methods()
 	ADD_GROUP("Lighting", "lighting_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "lighting_unwrap_uv2", PROPERTY_HINT_NONE, "Unwrap UV2"), "set_lighting_unwrap_uv2", "get_lighting_unwrap_uv2");
 
+	ADD_GROUP("Textures", "textures_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "textures_filter_nearest", PROPERTY_HINT_NONE, "Texture Filter Nearest"), "set_filter_nearest", "get_filter_nearest");
+	ADD_PROPERTY(PropertyInfo(Variant::PACKED_STRING_ARRAY, "textures_texture_import_extensions", PROPERTY_HINT_NONE, "Texture Import Extensions"), "set_texture_import_extensions", "get_texture_import_extensions");
+
 	ADD_GROUP("Options", "option_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip Hidden Layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_filter_nearest", PROPERTY_HINT_NONE, "Texture Filter Nearest"), "set_filter_nearest", "get_filter_nearest");
 
 	ADD_GROUP("Entities", "entity_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "entity_common", PROPERTY_HINT_NONE, "Common Entities"), "set_entity_common", "get_entity_common");
@@ -49,6 +56,12 @@ void TBLoader::_bind_methods()
 
 TBLoader::TBLoader()
 {
+	// Set default texture extensions for the editor property
+	m_texture_import_extensions.append("png");
+	m_texture_import_extensions.append("tga");
+	m_texture_import_extensions.append("bmp");
+	m_texture_import_extensions.append("jpg");
+	m_texture_import_extensions.append("jpeg");
 }
 
 TBLoader::~TBLoader()
@@ -85,6 +98,26 @@ bool TBLoader::get_lighting_unwrap_uv2()
 	return m_lighting_unwrap_uv2;
 }
 
+void TBLoader::set_texture_import_extensions(const PackedStringArray& extensions)
+{
+	m_texture_import_extensions = extensions;
+}
+
+const PackedStringArray& TBLoader::get_texture_import_extensions() const
+{
+	return m_texture_import_extensions;
+}
+
+void TBLoader::set_filter_nearest(bool enabled)
+{
+	m_filter_nearest = enabled;
+}
+
+bool TBLoader::get_filter_nearest()
+{
+	return m_filter_nearest;
+}
+
 void TBLoader::set_collision(bool enabled)
 {
 	m_collision = enabled;
@@ -103,16 +136,6 @@ void TBLoader::set_skip_hidden_layers(bool enabled)
 bool TBLoader::get_skip_hidden_layers()
 {
 	return m_skip_hidden_layers;
-}
-
-void TBLoader::set_filter_nearest(bool enabled)
-{
-	m_filter_nearest = enabled;
-}
-
-bool TBLoader::get_filter_nearest()
-{
-	return m_filter_nearest;
 }
 
 void TBLoader::set_entity_common(bool enabled)
