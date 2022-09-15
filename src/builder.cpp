@@ -30,11 +30,6 @@ void Builder::load_map(const String& path)
 		return;
 	}
 
-	if (m_loader->m_texture_import_extensions.is_empty()) {
-		UtilityFunctions::printerr("No texture import extension(s) provided!");
-		return;
-	}
-
 	// Parse the map from the file
 	f.open(path, File::READ);
 	LMMapParser parser(m_map);
@@ -517,6 +512,11 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 void Builder::load_and_cache_map_textures()
 {
+	if (m_loader->m_texture_import_extensions.is_empty()) {
+		UtilityFunctions::printerr("No texture import extension(s) provided. Cannot load textures!");
+		return;
+	}
+
 	m_loaded_map_textures.clear();
 
 	// Find texture extensions that are supported by godot
@@ -529,6 +529,11 @@ void Builder::load_and_cache_map_textures()
 		if (bool is_extension_supported = godot_supported_texture_extensions.find(extension) != -1) {
 			valid_extensions.append(extension);
 		}
+	}
+
+	if (valid_extensions.is_empty()) {
+		UtilityFunctions::printerr("No valid texture import extension(s) provided. Cannot load textures!");
+			return;
 	}
 
 	// Load and cache textures used by the map
