@@ -41,11 +41,13 @@ void Builder::load_map(const String& path)
 	parser.load_from_godot_file(f);
 	f.close();
 
+	load_and_cache_map_textures();
+
 	// We have to manually set the size of textures
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
-
-		auto res_texture = texture_from_name(tex.name, m_loader->m_texture_import_extensions);
+		
+		auto res_texture = texture_from_name(tex.name);
 		if (res_texture != nullptr) {
 			tex.width = res_texture->get_width();
 			tex.height = res_texture->get_height();
@@ -441,18 +443,17 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 	for (int i = 0; i < m_map->texture_count; i++) {
 		LMTextureData tex = m_map->textures[i];
-		char* name = tex.name;
 
 		// Create material
 		Ref<Material> material;
 
 		// Attempt to load material
-		material = material_from_name(name);
+		material = material_from_name(tex.name);
 
 		if (material == nullptr) {
 			// Load texture
-			auto res_texture = texture_from_name(name, m_loader->m_texture_import_extensions);
-
+			auto res_texture = texture_from_name(tex.name);
+			
 			// Create material
 			if (res_texture != nullptr) {
 				Ref<StandardMaterial3D> new_material = memnew(StandardMaterial3D());
@@ -461,15 +462,13 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 					new_material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
 				}
 				material = new_material;
-			} else {
-				UtilityFunctions::printerr(String(tex.name) + " - " + "texture cannot be found with the provided import extension(s)!");
 			}
 		}
 
 		// Gather surfaces for this texture
 		LMSurfaceGatherer surf_gather(m_map);
 		surf_gather.surface_gatherer_set_entity_index_filter(idx);
-		surf_gather.surface_gatherer_set_texture_filter(name);
+		surf_gather.surface_gatherer_set_texture_filter(tex.name);
 		surf_gather.surface_gatherer_run();
 
 		auto& surfs = surf_gather.out_surfaces;
@@ -516,7 +515,44 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	return mesh_instance;
 }
 
-String Builder::texture_path(const char* name, const String& extension)
+void Builder::load_and_cache_map_textures()
+{
+	m_loaded_map_textures.clear();
+
+	// Find texture extensions that are supported by godot
+	auto resource_loader = ResourceLoader::get_singleton();
+	const PackedStringArray& godot_supported_texture_extensions = resource_loader->get_recognized_extensions_for_type("CompressedTexture2D");
+
+	PackedStringArray valid_extensions;
+	for (int64_t index(0); index < m_loader->m_texture_import_extensions.size(); ++index) {
+		const String extension = m_loader->m_texture_import_extensions[index];
+		if (bool is_extension_supported = godot_supported_texture_extensions.find(extension) != -1) {
+			valid_extensions.append(extension);
+		}
+	}
+
+	// Load and cache textures used by the map
+	for (int64_t tex_index(0); tex_index < m_map->texture_count; ++tex_index) {
+		bool has_loaded_texture(false);
+
+		const LMTextureData& tex = m_map->textures[tex_index];
+		// Find the texture with a supported extension - stop when it can be loaded
+		for (int64_t ext_index(0); ext_index < valid_extensions.size(); ++ext_index) {
+			const String path = texture_path(tex.name, valid_extensions[ext_index].utf8().get_data());
+			if (resource_loader->exists(path)) {
+				m_loaded_map_textures[tex.name] = resource_loader->load(path);
+				has_loaded_texture = true;
+				break;
+			}
+		}
+
+		if (!has_loaded_texture) {
+			UtilityFunctions::printerr("Texture cannot be found! - ", tex.name);
+		}
+	}
+}
+
+String Builder::texture_path(const char* name, const char* extension)
 {
 	return String("res://textures/") + name + "." + extension;
 }
@@ -537,22 +573,9 @@ String Builder::material_path(const char* name)
 	return material_path;
 }
 
-Ref<Texture2D> Builder::texture_from_name(const char* name, const PackedStringArray& extensions_to_check)
+Ref<Texture2D> Builder::texture_from_name(const char* name)
 {
-	auto resource_loader = ResourceLoader::get_singleton();
-	const PackedStringArray& godot_supported_texture_extensions = resource_loader->get_recognized_extensions_for_type("CompressedTexture2D");
-	
-	for (int64_t index(0); index < extensions_to_check.size(); ++index) {
-		const String extension = extensions_to_check[index];
-		if (bool is_extension_supported = godot_supported_texture_extensions.find(extension) != -1) {
-			const String path = texture_path(name, extension);
-			if (resource_loader->exists(path)) {
-				return resource_loader->load(path);
-			}
-		}
-	}
-
-	return nullptr;
+	return VariantCaster<Ref<Texture2D>>::cast(m_loaded_map_textures[name]);
 }
 
 Ref<Material> Builder::material_from_name(const char* name)
