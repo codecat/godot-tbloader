@@ -41,7 +41,7 @@ void Builder::load_map(const String& path)
 	// We have to manually set the size of textures
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
-		
+
 		auto res_texture = texture_from_name(tex.name);
 		if (res_texture != nullptr) {
 			tex.width = res_texture->get_width();
@@ -524,8 +524,8 @@ void Builder::load_and_cache_map_textures()
 	const PackedStringArray& godot_supported_texture_extensions = resource_loader->get_recognized_extensions_for_type("CompressedTexture2D");
 
 	PackedStringArray valid_extensions;
-	for (int64_t index(0); index < m_loader->m_texture_import_extensions.size(); ++index) {
-		const String extension = m_loader->m_texture_import_extensions[index];
+	for (int64_t i = 0; i < m_loader->m_texture_import_extensions.size(); i++) {
+		const String& extension = m_loader->m_texture_import_extensions[i];
 		if (bool is_extension_supported = godot_supported_texture_extensions.find(extension) != -1) {
 			valid_extensions.append(extension);
 		}
@@ -536,14 +536,14 @@ void Builder::load_and_cache_map_textures()
 			return;
 	}
 
-	// Load and cache textures used by the map
-	for (int64_t tex_index(0); tex_index < m_map->texture_count; ++tex_index) {
+	// Attempt to load and cache textures used by the map
+	for (int tex_i = 0; tex_i < m_map->texture_count; tex_i++) {
 		bool has_loaded_texture(false);
 
-		const LMTextureData& tex = m_map->textures[tex_index];
+		const LMTextureData& tex = m_map->textures[tex_i];
 		// Find the texture with a supported extension - stop when it can be loaded
-		for (int64_t ext_index(0); ext_index < valid_extensions.size(); ++ext_index) {
-			const String path = texture_path(tex.name, valid_extensions[ext_index].utf8().get_data());
+		for (int64_t ext_i = 0; ext_i < valid_extensions.size(); ext_i++) {
+			const String path = texture_path(tex.name, valid_extensions[ext_i].utf8().get_data());
 			if (resource_loader->exists(path)) {
 				m_loaded_map_textures[tex.name] = resource_loader->load(path);
 				has_loaded_texture = true;

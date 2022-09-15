@@ -47,10 +47,10 @@ public:
 	bool get_lighting_unwrap_uv2();
 
 	// Textures
-	void set_texture_import_extensions(const PackedStringArray& import_extensions);
-	const PackedStringArray& get_texture_import_extensions() const;
 	void set_filter_nearest(bool enabled);
 	bool get_filter_nearest();
+	void set_texture_import_extensions(const PackedStringArray& import_extensions);
+	const PackedStringArray& get_texture_import_extensions() const;
 
 	// Options
 	void set_collision(bool enabled);

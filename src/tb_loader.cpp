@@ -17,7 +17,6 @@ void TBLoader::_bind_methods()
 
 	ClassDB::bind_method(D_METHOD("set_filter_nearest", "texture_filter_nearest"), &TBLoader::set_filter_nearest);
 	ClassDB::bind_method(D_METHOD("get_filter_nearest"), &TBLoader::get_filter_nearest);
-
 	ClassDB::bind_method(D_METHOD("set_texture_import_extensions", "texture_import_extensions"), &TBLoader::set_texture_import_extensions);
 	ClassDB::bind_method(D_METHOD("get_texture_import_extensions"), &TBLoader::get_texture_import_extensions);
 
@@ -98,16 +97,6 @@ bool TBLoader::get_lighting_unwrap_uv2()
 	return m_lighting_unwrap_uv2;
 }
 
-void TBLoader::set_texture_import_extensions(const PackedStringArray& extensions)
-{
-	m_texture_import_extensions = extensions;
-}
-
-const PackedStringArray& TBLoader::get_texture_import_extensions() const
-{
-	return m_texture_import_extensions;
-}
-
 void TBLoader::set_filter_nearest(bool enabled)
 {
 	m_filter_nearest = enabled;
@@ -116,6 +105,16 @@ void TBLoader::set_filter_nearest(bool enabled)
 bool TBLoader::get_filter_nearest()
 {
 	return m_filter_nearest;
+}
+
+void TBLoader::set_texture_import_extensions(const PackedStringArray& extensions)
+{
+	m_texture_import_extensions = extensions;
+}
+
+const PackedStringArray& TBLoader::get_texture_import_extensions() const
+{
+	return m_texture_import_extensions;
 }
 
 void TBLoader::set_collision(bool enabled)
