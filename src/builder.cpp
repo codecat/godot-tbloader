@@ -448,7 +448,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		if (material == nullptr) {
 			// Load texture
 			auto res_texture = texture_from_name(tex.name);
-			
+
 			// Create material
 			if (res_texture != nullptr) {
 				Ref<StandardMaterial3D> new_material = memnew(StandardMaterial3D());
@@ -512,47 +512,32 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 void Builder::load_and_cache_map_textures()
 {
-	if (m_loader->m_texture_import_extensions.is_empty()) {
-		UtilityFunctions::printerr("No texture import extension(s) provided. Cannot load textures!");
-		return;
-	}
-
 	m_loaded_map_textures.clear();
 
-	// Find texture extensions that are supported by godot
-	auto resource_loader = ResourceLoader::get_singleton();
-	const PackedStringArray& godot_supported_texture_extensions = resource_loader->get_recognized_extensions_for_type("CompressedTexture2D");
-
-	PackedStringArray valid_extensions;
-	for (int64_t i = 0; i < m_loader->m_texture_import_extensions.size(); i++) {
-		const String& extension = m_loader->m_texture_import_extensions[i];
-		if (bool is_extension_supported = godot_supported_texture_extensions.find(extension) != -1) {
-			valid_extensions.append(extension);
-		}
-	}
-
-	if (valid_extensions.is_empty()) {
-		UtilityFunctions::printerr("No valid texture import extension(s) provided. Cannot load textures!");
-			return;
-	}
-
+	// Setup a texture extension list that both Trenchbroom and Godot support
+	constexpr int num_extensions = 9;
+	constexpr const char* supported_extensions[num_extensions] = { "png", "dds", "tga", "jpg", "jpeg", "bmp", "webp", "exr", "hdr" };
+	
 	// Attempt to load and cache textures used by the map
-	for (int tex_i = 0; tex_i < m_map->texture_count; tex_i++) {
-		bool has_loaded_texture(false);
+	auto resource_loader = ResourceLoader::get_singleton();
+	String tex_path;
 
+	for (int tex_i = 0; tex_i < m_map->texture_count; tex_i++) {
+		bool has_loaded_texture = false;
 		const LMTextureData& tex = m_map->textures[tex_i];
+
 		// Find the texture with a supported extension - stop when it can be loaded
-		for (int64_t ext_i = 0; ext_i < valid_extensions.size(); ext_i++) {
-			const String path = texture_path(tex.name, valid_extensions[ext_i].utf8().get_data());
-			if (resource_loader->exists(path)) {
-				m_loaded_map_textures[tex.name] = resource_loader->load(path);
+		for (int ext_i = 0; ext_i < num_extensions; ext_i++) {
+			tex_path = texture_path(tex.name, supported_extensions[ext_i]);
+			if (resource_loader->exists(tex_path, "CompressedTexture2D")) {
+				m_loaded_map_textures[tex.name] = resource_loader->load(tex_path);
 				has_loaded_texture = true;
 				break;
 			}
 		}
 
 		if (!has_loaded_texture) {
-			UtilityFunctions::printerr("Texture cannot be found! - ", tex.name);
+			UtilityFunctions::printerr("Texture cannot be found or is unsupported! - ", "res://textures/", tex.name);
 		}
 	}
 }

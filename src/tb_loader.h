@@ -20,11 +20,9 @@ public:
 
 	bool m_lighting_unwrap_uv2 = false;
 
-	PackedStringArray m_texture_import_extensions;
-	bool m_filter_nearest = false;
-
 	bool m_collision = true;
 	bool m_skip_hidden_layers = true;
+	bool m_filter_nearest = false;
 
 	bool m_entity_common = true;
 	String m_entity_path = "res://entities";
@@ -46,17 +44,13 @@ public:
 	void set_lighting_unwrap_uv2(bool enabled);
 	bool get_lighting_unwrap_uv2();
 
-	// Textures
-	void set_filter_nearest(bool enabled);
-	bool get_filter_nearest();
-	void set_texture_import_extensions(const PackedStringArray& import_extensions);
-	const PackedStringArray& get_texture_import_extensions() const;
-
 	// Options
 	void set_collision(bool enabled);
 	bool get_collision();
 	void set_skip_hidden_layers(bool enabled);
 	bool get_skip_hidden_layers();
+	void set_filter_nearest(bool enabled);
+	bool get_filter_nearest();
 
 	// Entities
 	void set_entity_common(bool enabled);
