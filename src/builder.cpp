@@ -36,6 +36,8 @@ void Builder::load_map(const String& path)
 	parser.load_from_godot_file(f);
 	f.close();
 
+	load_and_cache_map_textures();
+
 	// We have to manually set the size of textures
 	for (int i = 0; i < m_map->texture_count; i++) {
 		auto& tex = m_map->textures[i];
@@ -436,17 +438,16 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 	for (int i = 0; i < m_map->texture_count; i++) {
 		LMTextureData tex = m_map->textures[i];
-		char* name = tex.name;
 
 		// Create material
 		Ref<Material> material;
 
 		// Attempt to load material
-		material = material_from_name(name);
+		material = material_from_name(tex.name);
 
 		if (material == nullptr) {
 			// Load texture
-			auto res_texture = texture_from_name(name);
+			auto res_texture = texture_from_name(tex.name);
 
 			// Create material
 			if (res_texture != nullptr) {
@@ -462,7 +463,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		// Gather surfaces for this texture
 		LMSurfaceGatherer surf_gather(m_map);
 		surf_gather.surface_gatherer_set_entity_index_filter(idx);
-		surf_gather.surface_gatherer_set_texture_filter(name);
+		surf_gather.surface_gatherer_set_texture_filter(tex.name);
 		surf_gather.surface_gatherer_run();
 
 		auto& surfs = surf_gather.out_surfaces;
@@ -509,10 +510,41 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	return mesh_instance;
 }
 
-String Builder::texture_path(const char* name)
+void Builder::load_and_cache_map_textures()
 {
-	//TODO: .png might not always be correct!
-	return String("res://textures/") + name + ".png";
+	m_loaded_map_textures.clear();
+
+	// Setup a texture extension list that both Trenchbroom and Godot support
+	constexpr int num_extensions = 9;
+	constexpr const char* supported_extensions[num_extensions] = { "png", "dds", "tga", "jpg", "jpeg", "bmp", "webp", "exr", "hdr" };
+	
+	// Attempt to load and cache textures used by the map
+	auto resource_loader = ResourceLoader::get_singleton();
+	String tex_path;
+
+	for (int tex_i = 0; tex_i < m_map->texture_count; tex_i++) {
+		bool has_loaded_texture = false;
+		const LMTextureData& tex = m_map->textures[tex_i];
+
+		// Find the texture with a supported extension - stop when it can be loaded
+		for (int ext_i = 0; ext_i < num_extensions; ext_i++) {
+			tex_path = texture_path(tex.name, supported_extensions[ext_i]);
+			if (resource_loader->exists(tex_path, "CompressedTexture2D")) {
+				m_loaded_map_textures[tex.name] = resource_loader->load(tex_path);
+				has_loaded_texture = true;
+				break;
+			}
+		}
+
+		if (!has_loaded_texture) {
+			UtilityFunctions::printerr("Texture cannot be found or is unsupported! - ", "res://textures/", tex.name);
+		}
+	}
+}
+
+String Builder::texture_path(const char* name, const char* extension)
+{
+	return String("res://textures/") + name + "." + extension;
 }
 
 String Builder::material_path(const char* name)
@@ -533,14 +565,7 @@ String Builder::material_path(const char* name)
 
 Ref<Texture2D> Builder::texture_from_name(const char* name)
 {
-	auto path = texture_path(name);
-
-	auto resource_loader = ResourceLoader::get_singleton();
-	if (!resource_loader->exists(path)) {
-		return nullptr;
-	}
-
-	return resource_loader->load(path);
+	return VariantCaster<Ref<Texture2D>>::cast(m_loaded_map_textures[name]);
 }
 
 Ref<Material> Builder::material_from_name(const char* name)
