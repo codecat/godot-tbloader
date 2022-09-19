@@ -343,6 +343,10 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
 		need_collider = ColliderType::Mesh;
 		need_collider_shape = ColliderShape::Convex;
 
+	} else if (node->is_class("Area3D")) {
+		// Area3D works best with convex collision meshes
+		need_collider = ColliderType::Mesh;
+		need_collider_shape = ColliderShape::Convex;
 	} else if (node->is_class("CollisionObject3D")) {
 		// If it's not a dynamic body, we can just use a concave trimesh collider
 		need_collider = ColliderType::Mesh;
