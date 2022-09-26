@@ -24,17 +24,15 @@ void Builder::load_map(const String& path)
 {
 	UtilityFunctions::print("Building map ", path);
 
-	File f;
-	if (!f.file_exists(path)) {
+	if (!FileAccess::file_exists(path)) {
 		UtilityFunctions::printerr("Map file does not exist!");
 		return;
 	}
 
 	// Parse the map from the file
-	f.open(path, File::READ);
+	Ref<FileAccess> f = FileAccess::open(path, FileAccess::ModeFlags::READ);
 	LMMapParser parser(m_map);
 	parser.load_from_godot_file(f);
-	f.close();
 
 	load_and_cache_map_textures();
 
@@ -557,11 +555,9 @@ String Builder::material_path(const char* name)
 	auto root_path = String("res://textures/") + name;
 	String material_path;
 
-	File f;
-
-	if (f.file_exists(root_path + ".material")) {
+	if (FileAccess::file_exists(root_path + ".material")) {
 		material_path = root_path + ".material";
-	} else if (f.file_exists(root_path + ".tres")) {
+	} else if (FileAccess::file_exists(root_path + ".tres")) {
 		material_path = root_path + ".tres";
 	}
 
