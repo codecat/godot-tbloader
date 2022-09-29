@@ -430,6 +430,8 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 	parent->add_child(mesh_instance);
 
+	// Set the layers that the mesh instance will be rendered in
+	mesh_instance->set_layer_mask(m_loader->get_visual_layer_mask());
 	mesh_instance->set_owner(m_loader->get_owner());
 	mesh_instance->set_name(instance_name);
 
