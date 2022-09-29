@@ -26,6 +26,8 @@ public:
 
 	bool m_entity_common = true;
 	String m_entity_path = "res://entities";
+	String m_clip_texture_name = "";
+	String m_skip_texture_name = "";
 
 protected:
 	static void _bind_methods();
@@ -51,6 +53,10 @@ public:
 	bool get_skip_hidden_layers();
 	void set_filter_nearest(bool enabled);
 	bool get_filter_nearest();
+	void set_clip_texture_name(const String& clip_texture);
+	String get_clip_texture_name();
+	void set_skip_texture_name(const String& skip_texture);
+	String get_skip_texture_name();
 
 	// Entities
 	void set_entity_common(bool enabled);
