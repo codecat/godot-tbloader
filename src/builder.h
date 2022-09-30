@@ -3,7 +3,7 @@
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include <godot_cpp/classes/file.hpp>
+#include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
