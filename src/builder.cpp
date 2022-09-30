@@ -489,7 +489,8 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 			// Add surface to collision mesh
 			add_surface_to_mesh(collision_mesh, surf);
 
-			if (tex.name != m_loader->get_clip_texture_name()) {
+			// Skip if the texture specifies that we only want collision (invisible walls)
+			if (tex.name == m_loader->get_clip_texture_name()) {
 				continue;
 			}
 
