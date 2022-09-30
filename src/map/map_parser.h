@@ -8,7 +8,8 @@
 #include "map_data.h"
 #include <memory>
 
-#include <godot_cpp/classes/file.hpp>
+#include <godot_cpp/classes/file_access.hpp>
+#include <godot_cpp/classes/ref.hpp>
 
 typedef enum PARSE_SCOPE {
 	PS_FILE,
@@ -49,7 +50,7 @@ public:
 	std::shared_ptr<LMMapData> map_data;
 
 	bool load_from_path(const char *map_file);
-	void load_from_godot_file(const godot::File& f);
+	void load_from_godot_file(godot::Ref<godot::FileAccess> f);
 
 	void token(const char *buf);
 	void newline();

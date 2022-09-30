@@ -105,7 +105,7 @@ bool LMMapParser::load_from_path(const char *map_file) {
 	return true;
 }
 
-void LMMapParser::load_from_godot_file(const godot::File& f) {
+void LMMapParser::load_from_godot_file(godot::Ref<godot::FileAccess> f) {
 	map_data->map_data_reset();
 
 	reset_current_face();
@@ -123,8 +123,8 @@ void LMMapParser::load_from_godot_file(const godot::File& f) {
 	int c;
 	char buf[255];
 	int buf_head = 0;
-	while (!f.eof_reached()) {
-		c = (int)f.get_8();
+	while (!f->eof_reached()) {
+		c = (int)f->get_8();
 
 		if (c == '\n') {
 			buf[buf_head] = '\0';
