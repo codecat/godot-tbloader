@@ -552,7 +552,7 @@ void Builder::load_and_cache_map_textures()
 			}
 		}
 
-		if (!has_loaded_texture) {
+		if (!has_loaded_texture && strcmp(tex.name, "__TB_empty") != 0) {
 			UtilityFunctions::printerr("Texture cannot be found or is unsupported! - ", "res://textures/", tex.name);
 		}
 	}
