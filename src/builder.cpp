@@ -492,7 +492,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 			if (tex.name != m_loader->get_clip_texture_name()) {
 				continue;
 			}
-			
+
 			// Add surface to visual mesh
 			add_surface_to_mesh(mesh, surf);
 			// Give mesh material
@@ -533,7 +533,7 @@ void Builder::load_and_cache_map_textures()
 	// Setup a texture extension list that both Trenchbroom and Godot support
 	constexpr int num_extensions = 9;
 	constexpr const char* supported_extensions[num_extensions] = { "png", "dds", "tga", "jpg", "jpeg", "bmp", "webp", "exr", "hdr" };
-	
+
 	// Attempt to load and cache textures used by the map
 	auto resource_loader = ResourceLoader::get_singleton();
 	String tex_path;
