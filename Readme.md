@@ -68,6 +68,20 @@ To see your textures in TrenchBroom, navigate to `Preferences` -> `Godot` -> `Ga
 
 > Note: This currently only works with textures in `.png` format, and materials in `.material` or `.tres`.
 
+# Building
+On all platforms, the build process is the same. Make sure scons is installed, and then just run
+`scons target=release` to build.
+
+On Mac, the process is the same, but you will have to codesign and notarize your resulting binary as
+well if you want it to run on consumer hardware. To do this, you need to already have the notary
+tool configured on your machine (you need a keychain profile), and then run:
+
+```
+$ codesign -s "Developer ID Application: Your Name (1234567890)" libtbloader.macos.universal.dylib --timestamp
+$ zip archive.zip libtbloader.macos.universal.dylib
+$ xcrun notarytool submit --keychain-profile "Profile Name" --wait archive.zip
+```
+
 # Credits
 * [Qodot](https://github.com/QodotPlugin/qodot-plugin)
 * [Original libmap](https://github.com/QodotPlugin/libmap)
