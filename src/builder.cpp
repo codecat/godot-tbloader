@@ -495,6 +495,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 			// Add surface to visual mesh
 			add_surface_to_mesh(mesh, surf);
+
 			// Give mesh material
 			if (material != nullptr) {
 				mesh->surface_set_material(mesh->get_surface_count() - 1, material);
