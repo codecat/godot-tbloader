@@ -21,6 +21,10 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_skip_hidden_layers"), &TBLoader::get_skip_hidden_layers);
 	ClassDB::bind_method(D_METHOD("set_filter_nearest", "option_filter_nearest"), &TBLoader::set_filter_nearest);
 	ClassDB::bind_method(D_METHOD("get_filter_nearest"), &TBLoader::get_filter_nearest);
+	ClassDB::bind_method(D_METHOD("set_clip_texture_name", "option_clip_texture_name"), &TBLoader::set_clip_texture_name);
+	ClassDB::bind_method(D_METHOD("get_clip_texture_name"), &TBLoader::get_clip_texture_name);
+	ClassDB::bind_method(D_METHOD("set_skip_texture_name", "option_skip_texture_name"), &TBLoader::set_skip_texture_name);
+	ClassDB::bind_method(D_METHOD("get_skip_texture_name"), &TBLoader::get_skip_texture_name);
 
 	ClassDB::bind_method(D_METHOD("set_entity_common", "entity_common"), &TBLoader::set_entity_common);
 	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
@@ -41,6 +45,8 @@ void TBLoader::_bind_methods()
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip Hidden Layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_filter_nearest", PROPERTY_HINT_NONE, "Texture Filter Nearest"), "set_filter_nearest", "get_filter_nearest");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "option_clip_texture_name", PROPERTY_HINT_NONE, "Clip Texture"), "set_clip_texture_name", "get_clip_texture_name");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "option_skip_texture_name", PROPERTY_HINT_NONE, "skip Texture"), "set_skip_texture_name", "get_skip_texture_name");
 
 	ADD_GROUP("Entities", "entity_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "entity_common", PROPERTY_HINT_NONE, "Common Entities"), "set_entity_common", "get_entity_common");
@@ -113,6 +119,26 @@ void TBLoader::set_filter_nearest(bool enabled)
 bool TBLoader::get_filter_nearest()
 {
 	return m_filter_nearest;
+}
+
+void TBLoader::set_clip_texture_name(String clip_texture_name)
+{
+	m_clip_texture_name = clip_texture_name;
+}
+
+String TBLoader::get_clip_texture_name()
+{
+	return m_clip_texture_name;
+}
+
+void TBLoader::set_skip_texture_name(const String& skip_texture_name)
+{
+	m_skip_texture_name = skip_texture_name;
+}
+
+String TBLoader::get_skip_texture_name()
+{
+	return m_skip_texture_name;
 }
 
 void TBLoader::set_entity_common(bool enabled)

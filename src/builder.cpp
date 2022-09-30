@@ -437,6 +437,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 	// Create mesh
 	Ref<ArrayMesh> mesh = memnew(ArrayMesh());
+	Ref<ArrayMesh> collision_mesh = memnew(ArrayMesh());
 
 	// Give mesh to mesh instance
 	mesh_instance->set_mesh(mesh);
@@ -446,6 +447,11 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 		// Create material
 		Ref<Material> material;
+
+		// Skip processing a surface when it's using the skip material
+		if (tex.name == m_loader->get_skip_texture_name()) {
+			continue;
+		}
 
 		// Attempt to load material
 		material = material_from_name(tex.name);
@@ -482,9 +488,15 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 				continue;
 			}
 
-			// Add surface to mesh
-			add_surface_to_mesh(mesh, surf);
+			// Add surface to collision mesh
+			add_surface_to_mesh(collision_mesh, surf);
 
+			if (tex.name != m_loader->get_clip_texture_name()) {
+				continue;
+			}
+			
+			// Add surface to visual mesh
+			add_surface_to_mesh(mesh, surf);
 			// Give mesh material
 			if (material != nullptr) {
 				mesh->surface_set_material(mesh->get_surface_count() - 1, material);
@@ -501,14 +513,15 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	// Create collisions if needed
 	switch (coltype) {
 	case ColliderType::Mesh:
-		add_collider_from_mesh(parent, mesh, colshape);
+		add_collider_from_mesh(parent, collision_mesh, colshape);
 		break;
 
 	case ColliderType::Static:
-		switch (colshape) {
-		case ColliderShape::Convex: mesh_instance->create_multiple_convex_collisions(); break;
-		case ColliderShape::Concave: mesh_instance->create_trimesh_collision(); break;
-		}
+		StaticBody3D* static_body = memnew(StaticBody3D());
+		static_body->set_name(String(mesh_instance->get_name()) + "_col");
+		parent->add_child(static_body, true);
+		static_body->set_owner(m_loader->get_owner());
+		add_collider_from_mesh(static_body, collision_mesh, colshape);
 		break;
 	}
 
