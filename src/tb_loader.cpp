@@ -121,7 +121,7 @@ bool TBLoader::get_filter_nearest()
 	return m_filter_nearest;
 }
 
-void TBLoader::set_clip_texture_name(String clip_texture_name)
+void TBLoader::set_clip_texture_name(const String& clip_texture_name)
 {
 	m_clip_texture_name = clip_texture_name;
 }
