@@ -579,6 +579,9 @@ String Builder::material_path(const char* name)
 
 Ref<Texture2D> Builder::texture_from_name(const char* name)
 {
+	if (!m_loaded_map_textures.has(name)) {
+		return nullptr;
+	}
 	return VariantCaster<Ref<Texture2D>>::cast(m_loaded_map_textures[name]);
 }
 
