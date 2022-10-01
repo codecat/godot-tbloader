@@ -377,6 +377,11 @@ void Builder::add_collider_from_mesh(Node3D* node, Ref<ArrayMesh>& mesh, Collide
 	case ColliderShape::Concave: mesh_shape = mesh->create_trimesh_shape(); break;
 	}
 
+	if (mesh_shape == nullptr) {
+		UtilityFunctions::printerr("Unable to create collider shape from mesh!");
+		return;
+	}
+
 	auto collision_shape = memnew(CollisionShape3D());
 	collision_shape->set_shape(mesh_shape);
 	node->add_child(collision_shape, true);
