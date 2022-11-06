@@ -31,7 +31,7 @@ if env["platform"] == "osx":
 else:
 	library = env.SharedLibrary(
 		"addons/tbloader/bin/tbloader.{}.{}{}".format(
-			env["platform"], env["arch_suffix"], env["SHLIBSUFFIX"]
+			env["platform"], env["arch"], env["SHLIBSUFFIX"]
 		),
 		source=sources,
 	)
