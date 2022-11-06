@@ -320,9 +320,9 @@ void Builder::set_entity_node_common(Node3D* node, LMEntity& ent)
 		}
 
 		node->set_rotation(Vector3(
-			Math::deg2rad(-pitch),
-			Math::deg2rad(yaw + 180),
-			Math::deg2rad(roll)
+			Math::deg_to_rad(-pitch),
+			Math::deg_to_rad(yaw + 180),
+			Math::deg_to_rad(roll)
 		));
 	}
 }
