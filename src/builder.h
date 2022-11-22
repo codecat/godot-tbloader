@@ -73,8 +73,8 @@ protected:
 protected:
 	void load_and_cache_map_textures();
 
-	static String texture_path(const char* name, const char* extension);
-	static String material_path(const char* name);
+	String texture_path(const char* name, const char* extension);
+	String material_path(const char* name);
 	Ref<Texture2D> texture_from_name(const char* name);
-	static Ref<Material> material_from_name(const char* name);
+	Ref<Material> material_from_name(const char* name);
 };

@@ -562,19 +562,22 @@ void Builder::load_and_cache_map_textures()
 		}
 
 		if (!has_loaded_texture && strcmp(tex.name, "__TB_empty") != 0) {
-			UtilityFunctions::printerr("Texture cannot be found or is unsupported! - ", "res://textures/", tex.name);
+			UtilityFunctions::printerr("Texture cannot be found or is unsupported! - ", m_loader->m_texture_path, tex.name);
+			if (m_loader->m_texture_path.is_empty()) {
+				UtilityFunctions::printerr("texture_path is empty");
+			}
 		}
 	}
 }
 
 String Builder::texture_path(const char* name, const char* extension)
 {
-	return String("res://textures/") + name + "." + extension;
+	return m_loader->m_texture_path + "/" + name + "." + extension;
 }
 
 String Builder::material_path(const char* name)
 {
-	auto root_path = String("res://textures/") + name;
+	auto root_path = m_loader->m_texture_path + "/" + name;
 	String material_path;
 
 	if (FileAccess::file_exists(root_path + ".material")) {

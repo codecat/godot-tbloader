@@ -32,6 +32,8 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
 	ClassDB::bind_method(D_METHOD("set_entity_path", "entity_path"), &TBLoader::set_entity_path);
 	ClassDB::bind_method(D_METHOD("get_entity_path"), &TBLoader::get_entity_path);
+	ClassDB::bind_method(D_METHOD("set_texture_path", "texture_path"), &TBLoader::set_texture_path);
+	ClassDB::bind_method(D_METHOD("get_texture_path"), &TBLoader::get_texture_path);
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
@@ -54,6 +56,9 @@ void TBLoader::_bind_methods()
 	ADD_GROUP("Entities", "entity_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "entity_common", PROPERTY_HINT_NONE, "Common Entities"), "set_entity_common", "get_entity_common");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "entity_path", PROPERTY_HINT_DIR, "Entity Path"), "set_entity_path", "get_entity_path");
+
+	ADD_GROUP("Textures", "texture_");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "texture_path", PROPERTY_HINT_DIR, "Textures Path"), "set_texture_path", "get_texture_path");
 }
 
 TBLoader::TBLoader()
@@ -172,6 +177,19 @@ void TBLoader::set_entity_path(const String& path)
 String TBLoader::get_entity_path()
 {
 	return m_entity_path;
+}
+
+void TBLoader::set_texture_path(const String& path)
+{
+	if (path.is_empty()) {
+		UtilityFunctions::push_warning("WARNING: texture_path should not be empty");
+	}
+	m_texture_path = path;
+}
+
+String TBLoader::get_texture_path()
+{
+	return m_texture_path;
 }
 
 void TBLoader::clear()
