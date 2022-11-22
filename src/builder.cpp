@@ -577,7 +577,7 @@ String Builder::texture_path(const char* name, const char* extension)
 
 String Builder::material_path(const char* name)
 {
-	auto root_path = m_loader->m_texture_path + name;
+	auto root_path = m_loader->m_texture_path + "/" + name;
 	String material_path;
 
 	if (FileAccess::file_exists(root_path + ".material")) {
