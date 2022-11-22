@@ -459,7 +459,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		}
 
 		// Attempt to load material
-		material = material_from_name(tex.name);
+		material = material_from_name(m_loader->m_texture_path, tex.name);
 
 		if (material == nullptr) {
 			// Load texture
@@ -553,7 +553,7 @@ void Builder::load_and_cache_map_textures()
 
 		// Find the texture with a supported extension - stop when it can be loaded
 		for (int ext_i = 0; ext_i < num_extensions; ext_i++) {
-			tex_path = texture_path(tex.name, supported_extensions[ext_i]);
+			tex_path = texture_path(m_loader->m_texture_path, tex.name, supported_extensions[ext_i]);
 			if (resource_loader->exists(tex_path, "CompressedTexture2D")) {
 				m_loaded_map_textures[tex.name] = resource_loader->load(tex_path);
 				has_loaded_texture = true;
@@ -562,19 +562,22 @@ void Builder::load_and_cache_map_textures()
 		}
 
 		if (!has_loaded_texture && strcmp(tex.name, "__TB_empty") != 0) {
-			UtilityFunctions::printerr("Texture cannot be found or is unsupported! - ", "res://textures/", tex.name);
+			UtilityFunctions::printerr("Texture cannot be found or is unsupported! - ", m_loader->m_texture_path, tex.name);
+			if (m_loader->m_texture_path.is_empty()) {
+				UtilityFunctions::printerr("texture_path is empty");
+			}
 		}
 	}
 }
 
-String Builder::texture_path(const char* name, const char* extension)
+String Builder::texture_path(const String& texture_path, const char* name, const char* extension)
 {
-	return String("res://textures/") + name + "." + extension;
+	return texture_path + "/" + name + "." + extension;
 }
 
-String Builder::material_path(const char* name)
+String Builder::material_path(const String& texture_path, const char* name)
 {
-	auto root_path = String("res://textures/") + name;
+	auto root_path = texture_path + name;
 	String material_path;
 
 	if (FileAccess::file_exists(root_path + ".material")) {
@@ -594,9 +597,9 @@ Ref<Texture2D> Builder::texture_from_name(const char* name)
 	return VariantCaster<Ref<Texture2D>>::cast(m_loaded_map_textures[name]);
 }
 
-Ref<Material> Builder::material_from_name(const char* name)
+Ref<Material> Builder::material_from_name(const String& texture_path, const char* name)
 {
-	auto path = material_path(name);
+	auto path = material_path(texture_path, name);
 
 	auto resource_loader = ResourceLoader::get_singleton();
 	if (!resource_loader->exists(path)) {

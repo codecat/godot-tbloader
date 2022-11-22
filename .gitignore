@@ -3,3 +3,4 @@ bin/
 *.obj
 *.os
 .DS_Store
+.vscode
