@@ -7,6 +7,8 @@
 #include <godot_cpp/classes/shape3d.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
+#include <godot_cpp/classes/convex_polygon_shape3d.hpp>
+#include <godot_cpp/classes/concave_polygon_shape3d.hpp>
 
 #include <tb_loader.h>
 
