@@ -1,6 +1,6 @@
 #pragma once
 
-#include <godot/gdnative_interface.h>
+#include <gdextension_interface.h>
 
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/core/defs.hpp>
