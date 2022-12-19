@@ -23,7 +23,7 @@ extern "C"
 {
 	GDExtensionBool GDE_EXPORT tbloader_init(
 		const GDExtensionInterface *p_interface,
-		const GDExtensionClassLibraryPtr p_library,
+		GDExtensionClassLibraryPtr p_library,
 		GDExtensionInitialization *r_initialization
 	) {
 		GDExtensionBinding::InitObject init_obj(p_interface, p_library, r_initialization);
