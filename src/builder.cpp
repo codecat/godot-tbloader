@@ -340,8 +340,8 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
 	ColliderType need_collider = ColliderType::None;
 	ColliderShape need_collider_shape = ColliderShape::Concave;
 
-	if (node->is_class("RigidDynamicBody3D")) {
-		// RigidDynamicBody3D requires convex collision meshes
+	if (node->is_class("RigidBody3D")) {
+		// RigidBody3D requires convex collision meshes
 		need_collider = ColliderType::Mesh;
 		need_collider_shape = ColliderShape::Convex;
 
