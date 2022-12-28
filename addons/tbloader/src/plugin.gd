@@ -2,7 +2,7 @@
 extends EditorPlugin
 class_name TBPlugin
 
-var godot_fgd = preload("res://addons/tbloader/src/godot-fgd/toFgd.gd").new()
+var godot_fgd = preload("res://addons/tbloader/src/toFgd.gd").new()
 var map_control: Control = null
 var fgd_control: Control = null
 var editing_loader: WeakRef = weakref(null)
