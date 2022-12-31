@@ -5,6 +5,8 @@ class_name TBPlugin
 var map_control: Control = null
 var editing_loader: WeakRef = weakref(null)
 
+var import_plugin: TBMapImportPlugin = TBMapImportPlugin.new()
+
 func _enter_tree():
 	set_icons(true)
 
@@ -12,12 +14,16 @@ func _enter_tree():
 	map_control.set_visible(false)
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, map_control)
 
+	add_import_plugin(import_plugin)
+
 func _exit_tree():
 	set_icons(false)
 
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, map_control)
 	map_control.queue_free()
 	map_control = null
+
+	remove_import_plugin(import_plugin)
 
 func _handles(object):
 	return object is TBLoader

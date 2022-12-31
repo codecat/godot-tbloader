@@ -77,4 +77,6 @@ protected:
 	String material_path(const char* name);
 	Ref<Texture2D> texture_from_name(const char* name);
 	Ref<Material> material_from_name(const char* name);
+
+	Node *get_owner() const;
 };

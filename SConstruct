@@ -18,6 +18,10 @@ sources = Glob("src/*.cpp")
 sources += Glob("src/builders/*.cpp")
 sources += Glob("src/map/*.cpp")
 
+# clangd
+env.Tool("compilation_db")
+Alias("cdb", env.CompilationDatabase())
+
 if env["platform"] == "windows" and env["target"] == "template_debug":
 	env.Append(LINKFLAGS=["/DEBUG"])
 
