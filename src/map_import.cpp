@@ -79,38 +79,25 @@ inline Dictionary assemble_import_option(String name, N default_value)
 	return dictionary;
 }
 
-inline Dictionary assemble_import_option_category(String name)
-{
-	Dictionary dictionary;
-	dictionary["name"] = name;
-	dictionary["default_value"] = "";
-	dictionary["usage"] = PROPERTY_USAGE_CATEGORY;
-	return dictionary;
-}
-
 TypedArray<Dictionary> TBMapImportPlugin::_get_import_options(const String &path, int64_t preset_index) const
 {
 	bool quake = preset_index == 1;
 	TypedArray<Dictionary> out;
 
-	out.append(assemble_import_option_category("map"));
-	out.append(assemble_import_option("inverse_scale", 16));
+	out.append(assemble_import_option("map/inverse_scale", 16));
 
-	out.append(assemble_import_option_category("lighting"));
-	out.append(assemble_import_option("unwrap_uv2", false));
+	out.append(assemble_import_option("lighting/unwrap_uv2", false));
 
-	out.append(assemble_import_option_category("options"));
-	out.append(assemble_import_option("collisions_enabled", true));
-	out.append(assemble_import_option("skip_hidden_layers", true));
-	out.append(assemble_import_option("nearest_texture_filter", quake));
-	out.append(assemble_import_option("clip_texture_path", PROPERTY_HINT_ENUM_SUGGESTION, "special/clip,tools/toolsclip", quake ? "special/clip" : ""));
-	out.append(assemble_import_option("skip_texture_path", PROPERTY_HINT_ENUM_SUGGESTION, "special/skip,tools/toolsskip", quake ? "special/skip" : ""));
-	out.append(assemble_import_option("visual_layer_mask", PROPERTY_HINT_LAYERS_3D_RENDER, "", 1));
+	out.append(assemble_import_option("options/collisions_enabled", true));
+	out.append(assemble_import_option("options/skip_hidden_layers", true));
+	out.append(assemble_import_option("options/nearest_texture_filter", quake));
+	out.append(assemble_import_option("options/clip_texture_path", PROPERTY_HINT_ENUM_SUGGESTION, "special/clip,tools/toolsclip", quake ? "special/clip" : ""));
+	out.append(assemble_import_option("options/skip_texture_path", PROPERTY_HINT_ENUM_SUGGESTION, "special/skip,tools/toolsskip", quake ? "special/skip" : ""));
+	out.append(assemble_import_option("options/visual_layer_mask", PROPERTY_HINT_LAYERS_3D_RENDER, "", 1));
 
-	out.append(assemble_import_option_category("entities"));
-	out.append(assemble_import_option("common_entities", true));
-	out.append(assemble_import_option("entities_folder_path", PROPERTY_HINT_DIR, "", "res://entities"));
-	out.append(assemble_import_option("textures_folder_path", PROPERTY_HINT_DIR, "", "res://textures"));
+	out.append(assemble_import_option("entities/common_entities", true));
+	out.append(assemble_import_option("entities/entities_folder_path", PROPERTY_HINT_DIR, "", "res://entities"));
+	out.append(assemble_import_option("entities/textures_folder_path", PROPERTY_HINT_DIR, "", "res://textures"));
 
 	return out;
 }
@@ -149,23 +136,23 @@ int64_t TBMapImportPlugin::_import(const String &source_file, const String &save
 
 	// Map
 	loader->set_map(source_file);
-	loader->set_inverse_scale(options["inverse_scale"]);
+	loader->set_inverse_scale(options["map/inverse_scale"]);
 
 	// Lighting
-	loader->set_lighting_unwrap_uv2(options["unwrap_uv2"]);
+	loader->set_lighting_unwrap_uv2(options["lighting/unwrap_uv2"]);
 
 	// Options
-	loader->set_collision(options["collisions_enabled"]);
-	loader->set_skip_hidden_layers(options["skip_hidden_layers"]);
-	loader->set_filter_nearest(options["nearest_texture_filter"]);
-	loader->set_clip_texture_name(options["clip_texture_path"]);
-	loader->set_skip_texture_name(options["skip_texture_path"]);
-	loader->set_visual_layer_mask(options["visual_layer_mask"]);
+	loader->set_collision(options["options/collisions_enabled"]);
+	loader->set_skip_hidden_layers(options["options/skip_hidden_layers"]);
+	loader->set_filter_nearest(options["options/nearest_texture_filter"]);
+	loader->set_clip_texture_name(options["options/clip_texture_path"]);
+	loader->set_skip_texture_name(options["options/skip_texture_path"]);
+	loader->set_visual_layer_mask(options["options/visual_layer_mask"]);
 
 	// Entities
-	loader->set_entity_common(options["common_entities"]);
-	loader->set_entity_path(options["entities_folder_path"]);
-	loader->set_texture_path(options["textures_folder_path"]);
+	loader->set_entity_common(options["entities/common_entities"]);
+	loader->set_entity_path(options["entities/entities_folder_path"]);
+	loader->set_texture_path(options["entities/textures_folder_path"]);
 
 	loader->build_meshes();
 	scene->pack(loader);
