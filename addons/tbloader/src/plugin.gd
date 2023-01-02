@@ -46,7 +46,13 @@ func create_map_control() -> Control:
 
 func build_meshes():
 	var loader = editing_loader.get_ref()
-	loader.build_meshes()
+	if loader.get_scene_file_path() != null: # from imported
+		var interface = get_editor_interface()
+		var fs = interface.get_resource_filesystem()
+		fs.reimport_files([loader.get_scene_file_path()])
+		interface.reload_scene_from_path(loader.get_tree().edited_scene_root.get_scene_file_path())
+	else:
+		loader.build_meshes()
 
 func set_icons(on):
 	var editor_interface = get_editor_interface()

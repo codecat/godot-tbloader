@@ -1,10 +1,9 @@
 
-#include "gdextension_interface.h"
-#include "godot_cpp/classes/editor_import_plugin.hpp"
-#include "godot_cpp/core/error_macros.hpp"
-#include "godot_cpp/variant/utility_functions.hpp"
+#include <gdextension_interface.h>
+#include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
+#include <godot_cpp/classes/editor_import_plugin.hpp>
 #include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/resource_saver.hpp>
@@ -12,6 +11,7 @@
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 #include <tb_loader.h>
 #include <map_import.h>
