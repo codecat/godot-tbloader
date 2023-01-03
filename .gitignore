@@ -4,6 +4,3 @@ bin/
 *.os
 .DS_Store
 .vscode
-
-# clangd
-compile_commands.json
