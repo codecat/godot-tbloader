@@ -214,7 +214,7 @@ func create_entity(path, properties = []):
         property.name if property.name else "unnamed",
         type_converter(property.type) if property.type else 4,
         string_to_title_case(property.name) if property.name else "",
-        value_converter(property.type, property.default_value) if property.default_value else "",
+        value_converter(property.type, property.default_value) if property.default_value else "\"String\"",
       ]
 
       if property.type not in [28]: # Array
