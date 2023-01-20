@@ -1,5 +1,15 @@
 extends SceneTree
 
+var supported_types = {
+  1: "bool",
+  2: "integer",
+  3: "float",
+  4: "string",
+  20: "color",
+  27: "flags",
+  28: "choices"
+}
+
 func get_files(entities_dir):
   # Define the root directory to search
   var root_dir = "res://%s" % entities_dir
@@ -89,18 +99,21 @@ func filter_properties(properties = []):
 
 func type_converter(type: int):
   # Convert the type to a string
-  var types = {
-    1: "bool",
-    2: "integer",
-    3: "float",
-    4: "string",
-    20: "color",
-    27: "flags",
-    28: "choices"
-  }
-  return types[type] if type in types else "string"
+  return supported_types[type] if type in supported_types else "string"
 
-func value_converter(type: int, value: Variant):
+func value_converter(type: int, input_value: Variant):
+  var defaults = {
+    1: false,
+    2: 0,
+    3: 0.0,
+    4: "",
+    20: Color(1, 1, 1, 1),
+    27: {},
+    28: []
+  }
+
+  var value = input_value if input_value != null else defaults[type]
+
   # Convert the value to a string
   if type == 4:
     return "\"%s\"" % value
@@ -200,21 +213,21 @@ func create_entity(path, properties = []):
   # Body
   # Example: energy(float) : "Energy" : 1 : "The light's strengh multiplier"
   for property in properties:
-    if property.name.begins_with("fgd_") or property.name in fgd_block:
+    if property.name.begins_with("fgd_") or !supported_types.has(property.type) or property.name in fgd_block:
       continue
     
     if property.type in [27]: # Flags
       entity += "  %s(%s) = %s" % [
         property.name if property.name else "unnamed",
         type_converter(property.type) if property.type else 4,
-        value_converter(property.type, property.default_value) if property.default_value else "",
+        value_converter(property.type, property.default_value),
       ]
     else:
       entity += "  %s(%s) : \"%s\" : %s" % [
         property.name if property.name else "unnamed",
         type_converter(property.type) if property.type else 4,
         string_to_title_case(property.name) if property.name else "",
-        value_converter(property.type, property.default_value) if property.default_value else "\"String\"",
+        value_converter(property.type, property.default_value),
       ]
 
       if property.type not in [28]: # Array
