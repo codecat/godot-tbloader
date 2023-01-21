@@ -31,6 +31,12 @@ the node you can select where your `.map` file is located, plus some more useful
 node still selected and the 3D view open, you will see a button `Build Meshes` in the toolbar the 3D
 view. Click that button to build the geometry.
 
+# TrenchBroom game config
+The `tb-gameconfig` folder contains a game configuration for this addon. This includes a simple FGD
+which will have some common entities that create Godot nodes. Simply place the files in a folder
+called `Godot` inside the `games` folder of your TrenchBroom installation, so you would have
+`games/Godot/<files>`.
+
 # Entities
 The following brush entities are supported by default:
 
@@ -56,12 +62,6 @@ Any properties set on the entity will be set directly on the instantiated node u
 [`_set`](https://docs.godotengine.org/en/latest/classes/class_object.html#class-object-method-set)
 and [`_get`](https://docs.godotengine.org/en/latest/classes/class_object.html#class-object-method-get).
 The getter is used first to determine the type of the property.
-
-# TrenchBroom game config
-The `tb-gameconfig` folder contains a game configuration for this addon. This includes a simple FGD
-which will have some common entities that create Godot nodes. Simply place the files in a folder
-called `Godot` inside the `games` folder of your TrenchBroom installation, so you would have
-`games/Godot/<files>`.
 
 # Textures
 To see your textures in TrenchBroom, navigate to `Preferences` -> `Godot` -> `Game Path` and set it to your project's root directory. TrenchBroom will be able to see textures in your project. TBLoader will look for your textures in the `res://textures` directory. If you have a material (`rust.material`) in the same folder and with the same name as your texture (`rust.png`), TBLoader will load your material instead.
