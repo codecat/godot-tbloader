@@ -106,7 +106,7 @@ func value_converter(type: int, input_value: Variant):
     1: false,
     2: 0,
     3: 0.0,
-    4: "",
+    4: "undefined",
     20: Color(1, 1, 1, 1),
     27: {},
     28: []
@@ -193,17 +193,20 @@ func create_entity(path, properties = []):
     return null
   # Header
   # Example: @PointClass size(-4 -4 -4, 4 4 4) color(255 255 0) model({ "path": ":progs/player.mdl" }) = light : "Light" [
+  var fgd_solid = get_property_value_by_name("fgd_solid", properties, false)
   var fgd_size = get_property_value_by_name("fgd_size", properties, 4)
   var fgd_color = get_property_value_by_name("fgd_color", properties, "(0 255 0)")
   var fgd_model = get_property_value_by_name("fgd_model", properties, "")
   var fgd_block = get_property_value_by_name("fgd_block", properties, [])
 
+  var class_type = "SolidClass" if fgd_solid else "PointClass"
   var entity_name_properties = path_parser(path)
   var entity_name = entity_name_properties[0]
   var entity_label = entity_name_properties[1]
   fgd_model = " model(%s)" % JSON.stringify(fgd_model) if fgd_model else ""
 
-  var entity = "@PointClass size(-%s -%s -%s, %s %s %s) color%s%s = %s : \"%s\" [\n" % [
+  var entity = "@%s size(-%s -%s -%s, %s %s %s) color%s%s = %s : \"%s\" [\n" % [
+    class_type,
     fgd_size, fgd_size, fgd_size,
     fgd_size, fgd_size, fgd_size,
     fgd_color, fgd_model,
