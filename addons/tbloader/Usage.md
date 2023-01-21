@@ -1,3 +1,7 @@
+# Godot version notice
+You'll want to make sure you're on the latest version of Godot 4 when using TBLoader, since that's
+what we're aiming to support!
+
 # Usage
 To install TBLoader, you can either install it through [AssetLib](https://godotengine.org/asset-library/asset/1265)
 (search for "TrenchBroom Loader"), or by downloading a [release from Github](https://github.com/codecat/godot-tbloader/releases)
