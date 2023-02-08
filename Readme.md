@@ -8,12 +8,12 @@ Qodot is great! It works really well. I initially made TBLoader because I wanted
 different approaches to creating meshes, including creating a bunch of `CSGMesh3D` inside of
 `CSGCombiner3D`, but that ended up being [problematic](https://github.com/godotengine/godot/issues/58637).
 
-Since Qodot currently doesn't officially support Godot 4, I decided to take on the challenge and
-rewrite most of it in godot-cpp mostly for fun, but also because the only other existing Godot 4
-fork is made as an Engine Module, which requires recompiling the entire engine.
+When I originally made this, Qodot didn't officially support Godot 4. So I decided to take on the
+challenge and rewrite most of it in godot-cpp mostly for fun. Nowadays, Qodot has a .Net version
+available which does support Godot 4: https://github.com/QodotPlugin/Qodot
 
-If you're already using Qodot on Godot 3, there's probably not much reason for you to use this. It
-is also not backwards compatible with Qodot, and probably does a few things differently.
+If you're already using Qodot, there might not be a lot of reasons for you to use this. It is not
+backwards compatible with Qodot, and does a few things differently.
 
 # Usage
 To install TBLoader, you can either install it through [AssetLib](https://godotengine.org/asset-library/asset/1265)
