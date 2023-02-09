@@ -70,7 +70,7 @@ To see your textures in TrenchBroom, navigate to `Preferences` -> `Godot` -> `Ga
 
 # Building
 On all platforms, the build process is the same. Make sure scons is installed, and then just run
-`scons target=template_release` to build.
+`python -m SCons target=template_release` to build.
 
 On Mac, the process is the same, but you will have to codesign and notarize your resulting binary as
 well if you want it to run on consumer hardware. To do this, you need to already have the notary
