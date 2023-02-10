@@ -84,6 +84,7 @@ bool LMMapParser::load_from_path(const char *map_file) {
 	int c;
 	char buf[255];
 	int buf_head = 0;
+	bool is_quoted = false;
 	while ((c = fgetc(map)) != EOF) {
 		if (c == '\n') {
 			buf[buf_head] = '\0';
@@ -91,12 +92,16 @@ bool LMMapParser::load_from_path(const char *map_file) {
 			buf_head = 0;
 
 			newline();
-		} else if (isspace(c)) {
+		} else if (isspace(c) && !is_quoted) {
 			buf[buf_head] = '\0';
 			token(buf);
 			buf_head = 0;
 		} else {
-			buf[buf_head++] = c;
+			if (scope == PS_TEXTURE && c == '"') {
+				is_quoted = !is_quoted;
+			} else {
+				buf[buf_head++] = c;
+			}
 		}
 	}
 
@@ -123,6 +128,7 @@ void LMMapParser::load_from_godot_file(godot::Ref<godot::FileAccess> f) {
 	int c;
 	char buf[255];
 	int buf_head = 0;
+	bool is_quoted = false;
 	while (!f->eof_reached()) {
 		c = (int)f->get_8();
 
@@ -132,12 +138,16 @@ void LMMapParser::load_from_godot_file(godot::Ref<godot::FileAccess> f) {
 			buf_head = 0;
 
 			newline();
-		} else if (isspace(c)) {
+		} else if (isspace(c) && !is_quoted) {
 			buf[buf_head] = '\0';
 			token(buf);
 			buf_head = 0;
 		} else {
-			buf[buf_head++] = c;
+			if (scope == PS_TEXTURE && c == '"') {
+				is_quoted = !is_quoted;
+			} else {
+				buf[buf_head++] = c;
+			}
 		}
 	}
 }
