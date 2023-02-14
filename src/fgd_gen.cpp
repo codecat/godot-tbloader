@@ -4,6 +4,7 @@
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
+#include <godot_cpp/classes/script.hpp>
 
 #include <tb_loader.h>
 
@@ -51,14 +52,16 @@ String FGDGen::generate_fgd_for_entity(String entity_path) {
     Ref<PackedScene> scene = resource_loader->load(entity_path);
     Node* instance = scene->instantiate();
     auto properties = instance->get_property_list();
-    UtilityFunctions::print(properties);
-    auto script = instance->get_script();
-    UtilityFunctions::print(script);
+    UtilityFunctions::print("-------------------------------");
+    // UtilityFunctions::print(properties);
+    Ref<Script> attached_script = instance->get_script();
+    // auto attached_script_loaded = resource_loader->load(attached_script->get_path());
+    UtilityFunctions::print(attached_script->get_path());
+    // UtilityFunctions::print(attached_script_loaded);
 
     String type = "PointClass";
     String fgd_properties = "";
     String name = entity_path.replace(this->m_loader->get_entity_path() + "/", "").replace("/", "_").replace(".tscn", "");
-    //to calculate description: reverse the entity_path, find the first /, substr up until the first slash, then reverse again
     String description = instance->get_name();
     String custom_properties = "";
 
@@ -69,7 +72,7 @@ String FGDGen::generate_fgd_for_entity(String entity_path) {
 
 void FGDGen::generate() {
     PackedStringArray entity_paths = this->find_all_entity_paths_in_dir(m_loader->get_entity_path());
-    
+
     Ref<FileAccess> f = FileAccess::open(String(ProjectSettings::get_singleton()->get_setting("application/config/name")) + ".fgd", FileAccess::WRITE);
     for (auto entity_path : entity_paths) {
         String fgd_line = this->generate_fgd_for_entity(entity_path);
