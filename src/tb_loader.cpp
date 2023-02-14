@@ -37,6 +37,7 @@ void TBLoader::_bind_methods()
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
+	ClassDB::bind_method(D_METHOD("build_fgd"), &TBLoader::build_fgd);
 
 	ADD_GROUP("Map", "map_");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map_resource", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
@@ -208,4 +209,8 @@ void TBLoader::build_meshes()
 	Builder builder(this);
 	builder.load_map(m_map_path);
 	builder.build_map();
+}
+
+void TBLoader::build_fgd() {
+	
 }

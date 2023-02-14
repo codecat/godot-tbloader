@@ -2,13 +2,14 @@
 extends EditorPlugin
 class_name TBPlugin
 
-var map_control: Control = null
+var map_control: Control = HBoxContainer.new()
 var editing_loader: WeakRef = weakref(null)
 
 func _enter_tree():
 	set_icons(true)
 
-	map_control = create_map_control()
+	add_button_to_control("Build Meshes", "build_meshes")
+	add_button_to_control("Build FGD", "build_fgd")
 	map_control.set_visible(false)
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, map_control)
 
@@ -28,19 +29,20 @@ func _make_visible(visible: bool):
 func _edit(object):
 	editing_loader = weakref(object)
 
-func create_map_control() -> Control:
-	var button_build_meshes = Button.new()
-	button_build_meshes.flat = true
-	button_build_meshes.text = "Build Meshes"
-	button_build_meshes.connect("pressed", Callable(self, "build_meshes"))
-
-	var ret = HBoxContainer.new()
-	ret.add_child(button_build_meshes)
-	return ret
+func add_button_to_control(text, callback):
+	var button = Button.new()
+	button.flat = true
+	button.text = text
+	button.connect("pressed", Callable(self, callback))
+	map_control.add_child(button)
 
 func build_meshes():
 	var loader = editing_loader.get_ref()
 	loader.build_meshes()
+
+func build_fgd():
+	var loader = editing_loader.get_ref()
+	loader.build_fgd()
 
 func set_icons(on):
 	var editor_interface = get_editor_interface()

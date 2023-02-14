@@ -72,4 +72,5 @@ public:
 
 	void clear();
 	void build_meshes();
+	void build_fgd();
 };
