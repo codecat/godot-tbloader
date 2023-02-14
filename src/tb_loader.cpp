@@ -4,6 +4,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <builder.h>
+#include <fgd_gen.h>
 
 void TBLoader::_bind_methods()
 {
@@ -212,5 +213,8 @@ void TBLoader::build_meshes()
 }
 
 void TBLoader::build_fgd() {
-	
+	FGDGen fdg_gen = FGDGen(this);
+	fdg_gen.generate();
+	// Ref<FileAccess> f = FileAccess::open("Game.fgd", FileAccess::WRITE);
+	// f->store_string("Game\n{\n");
 }
