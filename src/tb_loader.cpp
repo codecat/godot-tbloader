@@ -213,7 +213,6 @@ void TBLoader::build_meshes()
 }
 
 void TBLoader::build_fgd() {
-	UtilityFunctions::print("build_fgd");
 	FGDGen fgd_gen(this);
 	fgd_gen.generate();
 }
