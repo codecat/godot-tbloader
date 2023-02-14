@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/script.hpp>
+#include <godot_cpp/variant/variant.hpp>
 
 #include <tb_loader.h>
 
@@ -46,24 +47,47 @@ PackedStringArray FGDGen::find_all_entity_paths_in_dir(String dir_path) {
 }
 
 String FGDGen::generate_fgd_for_entity(String entity_path) {
-    // fgd entry consists of type (point/solid), fgd predefined properties (base/angle/size/etc), name, description, and custom properties
-    // auto gen_fgd_for_property = [](String )
     auto resource_loader = ResourceLoader::get_singleton();
     Ref<PackedScene> scene = resource_loader->load(entity_path);
     Node* instance = scene->instantiate();
-    auto properties = instance->get_property_list();
-    UtilityFunctions::print("-------------------------------");
-    // UtilityFunctions::print(properties);
+    // auto properties = instance->get_property_list();
     Ref<Script> attached_script = instance->get_script();
-    // auto attached_script_loaded = resource_loader->load(attached_script->get_path());
-    UtilityFunctions::print(attached_script->get_path());
-    // UtilityFunctions::print(attached_script_loaded);
+
+    String fgd_properties = "";
+    String custom_properties = "";
+
+    auto stringify_variant_type = [&] (Variant v) {
+        switch (v.get_type()) {
+            case Variant::Type::BOOL: return "bool";
+            case Variant::Type::INT: return "integer";
+            case Variant::Type::FLOAT: return "float";
+            case Variant::Type::COLOR: return "color";
+            case Variant::Type::DICTIONARY: return "flags";
+            case Variant::Type::ARRAY: return "choices";
+            default: return "string";
+        }
+    };
+    
+    if (attached_script.is_valid()) {
+        Ref<Script> attached_script_loaded = resource_loader->load(attached_script->get_path());
+        TypedArray<Dictionary> property_list = attached_script_loaded->get_script_property_list();
+        for (int i = 0; i < property_list.size(); i++) {
+            Dictionary property = property_list[i];
+            if (property["hint_string"].stringify().find(".gd") != -1) continue;
+            if (property["name"].find("fgd_") != -1) {
+                fgd_properties += "\n" + property["hint_string"];
+            }
+            else {
+                custom_properties += vformat("\n%s(%s) : %s : %s : %s", property["name"], stringify_variant_type(property["type"]), property["name"], "DEFAULT_VALUE", "DESCRIPTION");
+            }
+        }
+        fgd_properties += "\n";
+        custom_properties += "\n";
+    }
 
     String type = "PointClass";
-    String fgd_properties = "";
     String name = entity_path.replace(this->m_loader->get_entity_path() + "/", "").replace("/", "_").replace(".tscn", "");
     String description = instance->get_name();
-    String custom_properties = "";
 
     String fgd_entry = vformat("@%s %s = %s : \"%s\" [ %s ]", type, fgd_properties, name, description, custom_properties);
 
