@@ -18,6 +18,6 @@ public:
     ~FGDGen();
     void generate();
 private:
-    PackedStringArray find_all_entity_paths();
+    PackedStringArray find_all_entity_paths_in_dir(String dir_path);
     String generate_fgd_line_for_entity(String entity_path);
 };

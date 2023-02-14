@@ -213,8 +213,9 @@ void TBLoader::build_meshes()
 }
 
 void TBLoader::build_fgd() {
-	FGDGen fdg_gen = FGDGen(this);
-	fdg_gen.generate();
+	UtilityFunctions::print("build_fgd");
+	FGDGen fgd_gen(this);
+	fgd_gen.generate();
 	// Ref<FileAccess> f = FileAccess::open("Game.fgd", FileAccess::WRITE);
 	// f->store_string("Game\n{\n");
 }
