@@ -12,6 +12,10 @@
 FGDGen::FGDGen(TBLoader* loader)
 {
     m_loader = loader;
+    this->fgd_properties = std::map<String, std::function<String(String)>>();
+    this->fgd_properties["fgd_size"] = [](String size) {
+        return vformat("size(-%s -%s -%s, %s %s %s)", size, size, size, size, size, size);
+    };
 }
 
 FGDGen::~FGDGen()
@@ -80,8 +84,9 @@ String FGDGen::generate_fgd_for_entity(String entity_path) {
                 if (instance->get(property["name"].stringify())) type = "SolidClass";
                 continue;
             }
-            if (property["name"].stringify().find("fgd_") != -1) {
-                fgd_properties += "\n" + property["hint_string"].stringify();
+            if (this->fgd_properties.find(property["name"].stringify()) != this->fgd_properties.end()) {
+                fgd_properties += this->fgd_properties[property["name"].stringify()](instance->get(property["name"].stringify()).stringify()) + " ";
+                continue;
             }
             else {
                 custom_properties += vformat("\n\t%s(%s) : \"%s\" : %s : \"%s\"", property["name"], stringify_variant_type(property["type"]), property["name"], instance->get(property["name"].stringify()), "");

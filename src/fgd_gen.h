@@ -5,6 +5,8 @@
 
 #include <godot_cpp/classes/file_access.hpp>
 
+#include <map>
+
 using namespace godot;
 
 class TBLoader;
@@ -20,4 +22,5 @@ public:
 private:
     PackedStringArray find_all_entity_paths_in_dir(String dir_path);
     String generate_fgd_for_entity(String entity_path);
+    std::map<String, std::function<String(String)>> fgd_properties;
 };
