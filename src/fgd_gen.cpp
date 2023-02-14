@@ -80,16 +80,17 @@ String FGDGen::generate_fgd_for_entity(String entity_path) {
         for (int i = 0; i < property_list.size(); i++) {
             Dictionary property = property_list[i];
             if (property["hint_string"].stringify().find(".gd") != -1 || (int64_t)property["type"] == Variant::Type::NIL) continue;
-            if (property["name"].stringify() == "fgd_solid") {
-                if (instance->get(property["name"].stringify())) type = "SolidClass";
+            auto property_name = property["name"].stringify();
+            if (property_name == "fgd_solid") {
+                if (instance->get(property_name)) type = "SolidClass";
                 continue;
             }
-            if (this->fgd_properties.find(property["name"].stringify()) != this->fgd_properties.end()) {
-                fgd_properties += this->fgd_properties[property["name"].stringify()](instance->get(property["name"].stringify()).stringify()) + " ";
+            if (this->fgd_properties.find(property_name) != this->fgd_properties.end()) {
+                fgd_properties += this->fgd_properties[property_name](instance->get(property_name).stringify()) + " ";
                 continue;
             }
             else {
-                custom_properties += vformat("\n\t%s(%s) : \"%s\" : %s : \"%s\"", property["name"], stringify_variant_type(property["type"]), property["name"], instance->get(property["name"].stringify()), "");
+                custom_properties += vformat("\n\t%s(%s) : \"%s\" : %s : \"%s\"", property["name"], stringify_variant_type(property["type"]), property["name"], instance->get(property_name), "");
             }
         }
         // fgd_properties += "\n";
