@@ -53,9 +53,6 @@ String FGDGen::generate_fgd_for_entity(String entity_path) {
     // auto properties = instance->get_property_list();
     Ref<Script> attached_script = instance->get_script();
 
-    String fgd_properties = "";
-    String custom_properties = "";
-
     auto stringify_variant_type = [&] (Variant v) {
         switch (v.get_type()) {
             case Variant::Type::BOOL: return "bool";
@@ -68,26 +65,32 @@ String FGDGen::generate_fgd_for_entity(String entity_path) {
         }
     };
     
-    if (attached_script.is_valid()) {
-        Ref<Script> attached_script_loaded = resource_loader->load(attached_script->get_path());
-        TypedArray<Dictionary> property_list = attached_script_loaded->get_script_property_list();
-        for (int i = 0; i < property_list.size(); i++) {
-            Dictionary property = property_list[i];
-            if (property["hint_string"].stringify().find(".gd") != -1) continue;
-            if (property["name"].find("fgd_") != -1) {
-                fgd_properties += "\n" + property["hint_string"];
-            }
-            else {
-                custom_properties += vformat("\n%s(%s) : %s : %s : %s", property["name"], stringify_variant_type(property["type"]), property["name"], "DEFAULT_VALUE", "DESCRIPTION");
-            }
-        }
-        fgd_properties += "\n";
-        custom_properties += "\n";
-    }
-
     String type = "PointClass";
     String name = entity_path.replace(this->m_loader->get_entity_path() + "/", "").replace("/", "_").replace(".tscn", "");
     String description = instance->get_name();
+    String fgd_properties = "";
+    String custom_properties = "";
+
+    if (attached_script.is_valid()) {
+        // Ref<Script> attached_script_loaded = resource_loader->load(attached_script->get_path());
+        TypedArray<Dictionary> property_list = attached_script->get_script_property_list();
+        for (int i = 0; i < property_list.size(); i++) {
+            Dictionary property = property_list[i];
+            if (property["hint_string"].stringify().find(".gd") != -1) continue;
+            UtilityFunctions::print(property);
+            UtilityFunctions::print(attached_script->get(property["name"].stringify()));
+            UtilityFunctions::print(instance->get(property["name"].stringify()));
+            if (property["name"].stringify() == "fgd_solid" && instance->get(property["name"].stringify())) type = "SolidClass";
+            else if (property["name"].stringify().find("fgd_") != -1) {
+                fgd_properties += "\n" + property["hint_string"].stringify();
+            }
+            else {
+                custom_properties += vformat("\n\t%s(%s) : %s : %s : %s", property["name"], stringify_variant_type(property["type"]), property["name"], "DEFAULT_VALUE", "DESCRIPTION");
+            }
+        }
+        // fgd_properties += "\n";
+        custom_properties += "\n";
+    }
 
     String fgd_entry = vformat("@%s %s = %s : \"%s\" [ %s ]", type, fgd_properties, name, description, custom_properties);
 
