@@ -2,5 +2,6 @@ bin/
 *.dblite
 *.obj
 *.os
+*.import
 .DS_Store
 .vscode
