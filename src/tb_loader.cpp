@@ -216,6 +216,4 @@ void TBLoader::build_fgd() {
 	UtilityFunctions::print("build_fgd");
 	FGDGen fgd_gen(this);
 	fgd_gen.generate();
-	// Ref<FileAccess> f = FileAccess::open("Game.fgd", FileAccess::WRITE);
-	// f->store_string("Game\n{\n");
 }

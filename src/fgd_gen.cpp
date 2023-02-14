@@ -1,6 +1,9 @@
 #include <fgd_gen.h>
 
 #include <godot_cpp/classes/dir_access.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
+#include <godot_cpp/classes/packed_scene.hpp>
+#include <godot_cpp/classes/project_settings.hpp>
 
 #include <tb_loader.h>
 
@@ -25,7 +28,8 @@ PackedStringArray FGDGen::find_all_entity_paths_in_dir(String dir_path) {
         if (entity_path.ends_with(".tscn")) entity_paths.append(entity_path);
     }
     std::transform(entity_paths.begin(), entity_paths.end(), entity_paths.begin(), [&dir_path, this](String path) {
-        return (dir_path + "/" + path).replace(this->m_loader->get_entity_path() + "/", "");
+        // return (dir_path + "/" + path).replace(this->m_loader->get_entity_path() + "/", "");
+        return (dir_path + "/" + path);
     });
 
     PackedStringArray subdirs = dir->get_directories();
@@ -40,14 +44,36 @@ PackedStringArray FGDGen::find_all_entity_paths_in_dir(String dir_path) {
     return entity_paths;
 }
 
-String FGDGen::generate_fgd_line_for_entity(String entity_path) {
-    String fgd_line;
-    return fgd_line;
+String FGDGen::generate_fgd_for_entity(String entity_path) {
+    // fgd entry consists of type (point/solid), fgd predefined properties (base/angle/size/etc), name, description, and custom properties
+    // auto gen_fgd_for_property = [](String )
+    auto resource_loader = ResourceLoader::get_singleton();
+    Ref<PackedScene> scene = resource_loader->load(entity_path);
+    Node* instance = scene->instantiate();
+    auto properties = instance->get_property_list();
+    UtilityFunctions::print(properties);
+    auto script = instance->get_script();
+    UtilityFunctions::print(script);
+
+    String type = "PointClass";
+    String fgd_properties = "";
+    String name = entity_path.replace(this->m_loader->get_entity_path() + "/", "").replace("/", "_").replace(".tscn", "");
+    //to calculate description: reverse the entity_path, find the first /, substr up until the first slash, then reverse again
+    String description = instance->get_name();
+    String custom_properties = "";
+
+    String fgd_entry = vformat("@%s %s = %s : \"%s\" [ %s ]", type, fgd_properties, name, description, custom_properties);
+
+    return fgd_entry;
 }
 
 void FGDGen::generate() {
     PackedStringArray entity_paths = this->find_all_entity_paths_in_dir(m_loader->get_entity_path());
-    UtilityFunctions::print(entity_paths);
-    // auto entity_base_path = m_loader->get_entity_path().replace("res://", "");
-
+    
+    Ref<FileAccess> f = FileAccess::open(String(ProjectSettings::get_singleton()->get_setting("application/config/name")) + ".fgd", FileAccess::WRITE);
+    for (auto entity_path : entity_paths) {
+        String fgd_line = this->generate_fgd_for_entity(entity_path);
+        f->store_string(fgd_line + "\n");
+        UtilityFunctions::print(fgd_line);
+    }
 }
