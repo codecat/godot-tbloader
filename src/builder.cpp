@@ -161,6 +161,10 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 
 		if (resource_loader->exists(path, "PackedScene")) {
 			Ref<PackedScene> scene = resource_loader->load(path);
+			if (scene == nullptr) {
+				UtilityFunctions::printerr("Resource at path '", path, "' could not be loaded as a PackedScene by the resource loader!");
+				return;
+			}
 
 			auto instance = scene->instantiate();
 			m_loader->add_child(instance);
