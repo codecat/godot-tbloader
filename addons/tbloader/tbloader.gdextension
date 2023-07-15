@@ -1,5 +1,6 @@
 [configuration]
 entry_symbol = "tbloader_init"
+compatibility_minimum = "4.1"
 
 [libraries]
 windows.64 = "bin/tbloader.windows.x86_64.dll"
