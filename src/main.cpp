@@ -4,15 +4,23 @@
 #include <godot_cpp/core/class_db.hpp>
 
 #include <tb_loader.h>
+#include <map_import.h>
 
 using namespace godot;
 
 void register_tbloader_types(ModuleInitializationLevel p_level)
 {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
+	switch (p_level)
+	{
+	case MODULE_INITIALIZATION_LEVEL_EDITOR:
+		ClassDB::register_class<TBMapImportPlugin>();
+		break;
+	case MODULE_INITIALIZATION_LEVEL_SCENE:
+		ClassDB::register_class<TBLoader>();
+		break;
+	default:
+		break;
 	}
-	ClassDB::register_class<TBLoader>();
 }
 
 void unregister_tbloader_types(ModuleInitializationLevel p_level)
