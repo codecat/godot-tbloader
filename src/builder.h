@@ -77,4 +77,8 @@ protected:
 	String material_path(const char* name);
 	Ref<Texture2D> texture_from_name(const char* name);
 	Ref<Material> material_from_name(const char* name);
+
+private:
+	String classname_to_resource_path(const String& classname);
+	void set_custom_entity_properties(LMEntity& ent, Node* instance);
 };
