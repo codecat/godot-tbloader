@@ -69,7 +69,34 @@ void Builder::build_map()
 void Builder::build_worldspawn(int idx, LMEntity& ent)
 {
 	// Create node for this entity
-	auto container_node = memnew(Node3D());
+	Node3D* container_node;
+	String path = classname_to_resource_path("worldspawn");
+
+	if (path != "") {
+		// Instantiate the scene with the name "worldspawn" and set its properties,
+		// as if it were a custom entity
+		auto resource_loader = ResourceLoader::get_singleton();
+
+		Ref<PackedScene> scene = resource_loader->load(path);
+		if (scene == nullptr) {
+			UtilityFunctions::printerr("Resource at path '", path, "' could not be loaded as a PackedScene by the resource loader!");
+			return;
+		}
+
+		Node* instance = scene->instantiate();
+		if (!instance->is_class("Node3D")) {
+			UtilityFunctions::printerr("worldspawn.tscn is not a Node3D!");
+			return;
+		}
+
+		set_custom_entity_properties(ent, instance);
+
+		container_node = (Node3D*)instance;
+	}
+	else {
+		container_node = memnew(Node3D());
+	}
+
 	m_loader->add_child(container_node);
 	container_node->set_owner(m_loader->get_owner());
 
