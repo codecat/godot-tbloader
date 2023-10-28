@@ -133,10 +133,10 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 		//TODO: More common entities
 	}
 
-	build_entity_custom(idx, ent, m_map->entity_geo[idx], classname);
+	build_entity_custom(idx, ent, classname);
 }
 
-void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname)
+void Builder::build_entity_custom(int idx, LMEntity& ent, const String& classname)
 {
 	// m_loader->m_entity_path => "res://entities/"
 	// "info_player_start" => "info/player/start.tscn", "info/player_start.tscn", "info_player_start.tscn"
