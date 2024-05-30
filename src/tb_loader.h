@@ -19,6 +19,7 @@ public:
 	int m_inverse_scale = 16;
 
 	bool m_lighting_unwrap_uv2 = false;
+	double m_lighting_unwrap_texel_size = 0.2;
 
 	bool m_collision = true;
 	bool m_skip_hidden_layers = true;
@@ -47,6 +48,8 @@ public:
 	// Lighting
 	void set_lighting_unwrap_uv2(bool enabled);
 	bool get_lighting_unwrap_uv2();
+	void set_lighting_unwrap_texel_size(double size);
+	double get_lighting_unwrap_texel_size();
 
 	// Options
 	void set_collision(bool enabled);

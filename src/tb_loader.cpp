@@ -14,6 +14,8 @@ void TBLoader::_bind_methods()
 
 	ClassDB::bind_method(D_METHOD("set_lighting_unwrap_uv2", "lighting_unwrap_uv2"), &TBLoader::set_lighting_unwrap_uv2);
 	ClassDB::bind_method(D_METHOD("get_lighting_unwrap_uv2"), &TBLoader::get_lighting_unwrap_uv2);
+	ClassDB::bind_method(D_METHOD("set_lighting_unwrap_texel_size", "lighting_unwrap_texel_size"), &TBLoader::set_lighting_unwrap_texel_size);
+	ClassDB::bind_method(D_METHOD("get_lighting_unwrap_texel_size"), &TBLoader::get_lighting_unwrap_texel_size);
 
 	ClassDB::bind_method(D_METHOD("set_collision", "option_collision"), &TBLoader::set_collision);
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
@@ -44,6 +46,7 @@ void TBLoader::_bind_methods()
 
 	ADD_GROUP("Lighting", "lighting_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "lighting_unwrap_uv2", PROPERTY_HINT_NONE, "Unwrap UV2"), "set_lighting_unwrap_uv2", "get_lighting_unwrap_uv2");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "lighting_unwrap_texel_size", PROPERTY_HINT_NONE, "Unwrap Texel Size"), "set_lighting_unwrap_texel_size", "get_lighting_unwrap_texel_size");
 
 	ADD_GROUP("Options", "option_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
@@ -97,6 +100,16 @@ void TBLoader::set_lighting_unwrap_uv2(bool enabled)
 bool TBLoader::get_lighting_unwrap_uv2()
 {
 	return m_lighting_unwrap_uv2;
+}
+
+void TBLoader::set_lighting_unwrap_texel_size(double size)
+{
+	m_lighting_unwrap_texel_size = size;
+}
+
+double TBLoader::get_lighting_unwrap_texel_size()
+{
+	return m_lighting_unwrap_texel_size;
 }
 
 void TBLoader::set_collision(bool enabled)
