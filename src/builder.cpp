@@ -519,7 +519,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 	// Unwrap UV2's if needed
 	if (m_loader->m_lighting_unwrap_uv2) {
-		mesh->lightmap_unwrap(mesh_instance->get_global_transform(), 0.05);
+		mesh->lightmap_unwrap(mesh_instance->get_global_transform(), m_loader->m_lighting_unwrap_texel_size);
 		mesh_instance->set_gi_mode(GeometryInstance3D::GI_MODE_STATIC);
 	}
 
