@@ -22,6 +22,11 @@ Builder::~Builder()
 {
 }
 
+Node *Builder::get_owner() const
+{
+	return m_loader->get_owner() == nullptr ? m_loader : m_loader->get_owner();
+}
+
 void Builder::load_map(const String& path)
 {
 	UtilityFunctions::print("Building map ", path);
@@ -71,7 +76,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent)
 	// Create node for this entity
 	auto container_node = memnew(Node3D());
 	m_loader->add_child(container_node);
-	container_node->set_owner(m_loader->get_owner());
+	container_node->set_owner(get_owner());
 
 	// Decide generated collision type
 	ColliderType collider = ColliderType::None;
@@ -168,7 +173,7 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 
 			auto instance = scene->instantiate();
 			m_loader->add_child(instance);
-			instance->set_owner(m_loader->get_owner());
+			instance->set_owner(get_owner());
 
 			if (instance->is_class("Node3D")) {
 				set_entity_node_common((Node3D*)instance, ent);
@@ -240,7 +245,7 @@ void Builder::build_entity_light(int idx, LMEntity& ent)
 	light->set_color(Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f));
 
 	m_loader->add_child(light);
-	light->set_owner(m_loader->get_owner());
+	light->set_owner(get_owner());
 }
 
 void Builder::build_entity_area(int idx, LMEntity& ent)
@@ -270,7 +275,7 @@ void Builder::build_entity_area(int idx, LMEntity& ent)
 		// Create the area
 		auto area = memnew(Area3D());
 		m_loader->add_child(area);
-		area->set_owner(m_loader->get_owner());
+		area->set_owner(get_owner());
 		area->set_position(center);
 
 		// Create collision shape for the area
@@ -391,7 +396,7 @@ void Builder::add_collider_from_mesh(Node3D* node, Ref<ArrayMesh>& mesh, Collide
 	auto collision_shape = memnew(CollisionShape3D());
 	collision_shape->set_shape(mesh_shape);
 	node->add_child(collision_shape, true);
-	collision_shape->set_owner(m_loader->get_owner());
+	collision_shape->set_owner(get_owner());
 }
 
 void Builder::add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf)
@@ -443,7 +448,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 	// Set the layers that the mesh instance will be rendered in
 	mesh_instance->set_layer_mask(m_loader->get_visual_layer_mask());
-	mesh_instance->set_owner(m_loader->get_owner());
+	mesh_instance->set_owner(get_owner());
 	mesh_instance->set_name(instance_name);
 
 	// Create mesh
@@ -533,7 +538,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		StaticBody3D* static_body = memnew(StaticBody3D());
 		static_body->set_name(String(mesh_instance->get_name()) + "_col");
 		parent->add_child(static_body, true);
-		static_body->set_owner(m_loader->get_owner());
+		static_body->set_owner(get_owner());
 		add_collider_from_mesh(static_body, collision_mesh, colshape);
 		break;
 	}
