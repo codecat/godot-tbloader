@@ -52,7 +52,7 @@ public:
 	void load_map(const String& path);
 	void build_map();
 
-	void build_worldspawn(int idx, LMEntity& ent);
+	void build_worldspawn(int idx, LMEntity& ent, bool visible_only);
 	void build_brush(int idx, Node3D* node, LMEntity& ent);
 
 	void build_entity(int idx, LMEntity& ent, const String& classname);
