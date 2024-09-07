@@ -53,7 +53,7 @@ void TBLoader::_bind_methods()
 	ADD_GROUP("Options", "option_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip Hidden Layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_empty_meshes", PROPERTY_HINT_NONE, "Skip Empty Meshes"), "set_skip_empty_meshes", "get_skip_hidden_layers");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_empty_meshes", PROPERTY_HINT_NONE, "Skip Empty Meshes"), "set_skip_empty_meshes", "get_skip_empty_meshes");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_filter_nearest", PROPERTY_HINT_NONE, "Texture Filter Nearest"), "set_filter_nearest", "get_filter_nearest");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "option_clip_texture_name", PROPERTY_HINT_NONE, "Clip Texture"), "set_clip_texture_name", "get_clip_texture_name");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "option_skip_texture_name", PROPERTY_HINT_NONE, "skip Texture"), "set_skip_texture_name", "get_skip_texture_name");
