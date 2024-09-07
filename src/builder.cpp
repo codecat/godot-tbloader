@@ -529,18 +529,25 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	}
 
 	// Create collisions if needed
-	switch (coltype) {
-	case ColliderType::Mesh:
-		add_collider_from_mesh(parent, collision_mesh, colshape);
-		break;
+	if (!m_loader->m_skip_empty_meshes || collision_mesh->get_surface_count() > 0) {
+		switch (coltype) {
+		case ColliderType::Mesh:
+			add_collider_from_mesh(parent, collision_mesh, colshape);
+			break;
 
-	case ColliderType::Static:
-		StaticBody3D* static_body = memnew(StaticBody3D());
-		static_body->set_name(String(mesh_instance->get_name()) + "_col");
-		parent->add_child(static_body, true);
-		static_body->set_owner(m_loader->get_owner());
-		add_collider_from_mesh(static_body, collision_mesh, colshape);
-		break;
+		case ColliderType::Static:
+			StaticBody3D* static_body = memnew(StaticBody3D());
+			static_body->set_name(String(mesh_instance->get_name()) + "_col");
+			parent->add_child(static_body, true);
+			static_body->set_owner(m_loader->get_owner());
+			add_collider_from_mesh(static_body, collision_mesh, colshape);
+			break;
+		}
+	}
+
+	// Remove the empty mesh instances if enabled
+	if (m_loader->m_skip_empty_meshes && mesh->get_surface_count() == 0) {
+		parent->remove_child(mesh_instance);
 	}
 
 	return mesh_instance;

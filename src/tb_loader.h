@@ -23,6 +23,7 @@ public:
 
 	bool m_collision = true;
 	bool m_skip_hidden_layers = true;
+	bool m_skip_empty_meshes = true;
 	bool m_filter_nearest = false;
 
 	bool m_entity_common = true;
@@ -56,6 +57,8 @@ public:
 	bool get_collision();
 	void set_skip_hidden_layers(bool enabled);
 	bool get_skip_hidden_layers();
+	void set_skip_empty_meshes(bool enabled);
+	bool get_skip_empty_meshes();
 	void set_filter_nearest(bool enabled);
 	bool get_filter_nearest();
 	void set_clip_texture_name(const String& clip_texture);

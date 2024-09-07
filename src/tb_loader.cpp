@@ -21,6 +21,8 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_collision"), &TBLoader::get_collision);
 	ClassDB::bind_method(D_METHOD("set_skip_hidden_layers", "option_skip_hidden_layers"), &TBLoader::set_skip_hidden_layers);
 	ClassDB::bind_method(D_METHOD("get_skip_hidden_layers"), &TBLoader::get_skip_hidden_layers);
+	ClassDB::bind_method(D_METHOD("set_skip_empty_meshes", "option_skip_empty_meshes"), &TBLoader::set_skip_empty_meshes);
+	ClassDB::bind_method(D_METHOD("get_skip_empty_meshes"), &TBLoader::get_skip_empty_meshes);
 	ClassDB::bind_method(D_METHOD("set_filter_nearest", "option_filter_nearest"), &TBLoader::set_filter_nearest);
 	ClassDB::bind_method(D_METHOD("get_filter_nearest"), &TBLoader::get_filter_nearest);
 	ClassDB::bind_method(D_METHOD("set_clip_texture_name", "option_clip_texture_name"), &TBLoader::set_clip_texture_name);
@@ -51,6 +53,7 @@ void TBLoader::_bind_methods()
 	ADD_GROUP("Options", "option_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_collision", PROPERTY_HINT_NONE, "Collision"), "set_collision", "get_collision");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_hidden_layers", PROPERTY_HINT_NONE, "Skip Hidden Layers"), "set_skip_hidden_layers", "get_skip_hidden_layers");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_skip_empty_meshes", PROPERTY_HINT_NONE, "Skip Empty Meshes"), "set_skip_empty_meshes", "get_skip_hidden_layers");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "option_filter_nearest", PROPERTY_HINT_NONE, "Texture Filter Nearest"), "set_filter_nearest", "get_filter_nearest");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "option_clip_texture_name", PROPERTY_HINT_NONE, "Clip Texture"), "set_clip_texture_name", "get_clip_texture_name");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "option_skip_texture_name", PROPERTY_HINT_NONE, "skip Texture"), "set_skip_texture_name", "get_skip_texture_name");
@@ -130,6 +133,16 @@ void TBLoader::set_skip_hidden_layers(bool enabled)
 bool TBLoader::get_skip_hidden_layers()
 {
 	return m_skip_hidden_layers;
+}
+
+void TBLoader::set_skip_empty_meshes(bool enabled)
+{
+	m_skip_empty_meshes = enabled;
+}
+
+bool TBLoader::get_skip_empty_meshes()
+{
+	return m_skip_empty_meshes;
 }
 
 void TBLoader::set_filter_nearest(bool enabled)
