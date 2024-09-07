@@ -66,7 +66,7 @@ void Builder::build_map()
 	}
 }
 
-void Builder::build_worldspawn(int idx, LMEntity& ent, bool visible_only)
+void Builder::build_worldspawn(int idx, LMEntity& ent, bool no_collision)
 {
 	// Create node for this entity
 	auto container_node = memnew(Node3D());
@@ -76,7 +76,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent, bool visible_only)
 	// Decide generated collision type
 	ColliderType collider = ColliderType::None;
 	ColliderShape collider_shape = ColliderShape::Concave;
-	if (!visible_only && m_loader->m_collision) {
+	if (!no_collision && m_loader->m_collision) {
 		collider = ColliderType::Static;
 		collider_shape = ColliderShape::Concave;
 	}
@@ -130,7 +130,7 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 			return;
 		}
 
-		if (classname == "visibleonly") {
+		if (classname == "nocollision") {
 			build_worldspawn(idx, ent, true);
 			return;
 		}
