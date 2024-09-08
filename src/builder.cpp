@@ -67,7 +67,7 @@ void Builder::build_map()
 	}
 }
 
-void Builder::build_worldspawn(int idx, LMEntity& ent)
+void Builder::build_worldspawn(int idx, LMEntity& ent, bool no_collision)
 {
 	// Create node for this entity
 	auto container_node = memnew(Node3D());
@@ -77,7 +77,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent)
 	// Decide generated collision type
 	ColliderType collider = ColliderType::None;
 	ColliderShape collider_shape = ColliderShape::Concave;
-	if (m_loader->m_collision) {
+	if (!no_collision && m_loader->m_collision) {
 		collider = ColliderType::Static;
 		collider_shape = ColliderShape::Concave;
 	}
@@ -116,7 +116,7 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 				return;
 			}
 		}
-		build_worldspawn(idx, ent);
+		build_worldspawn(idx, ent, false);
 		return;
 	}
 
@@ -128,6 +128,11 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 
 		if (classname == "area") {
 			build_entity_area(idx, ent);
+			return;
+		}
+
+		if (classname == "nocollision") {
+			build_worldspawn(idx, ent, true);
 			return;
 		}
 
@@ -546,18 +551,25 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	}
 
 	// Create collisions if needed
-	switch (coltype) {
-	case ColliderType::Mesh:
-		add_collider_from_mesh(parent, collision_mesh, colshape);
-		break;
+	if (!m_loader->m_skip_empty_meshes || collision_mesh->get_surface_count() > 0) {
+		switch (coltype) {
+		case ColliderType::Mesh:
+			add_collider_from_mesh(parent, collision_mesh, colshape);
+			break;
 
-	case ColliderType::Static:
-		StaticBody3D* static_body = memnew(StaticBody3D());
-		static_body->set_name(String(mesh_instance->get_name()) + "_col");
-		parent->add_child(static_body, true);
-		static_body->set_owner(m_loader->get_owner());
-		add_collider_from_mesh(static_body, collision_mesh, colshape);
-		break;
+		case ColliderType::Static:
+			StaticBody3D* static_body = memnew(StaticBody3D());
+			static_body->set_name(String(mesh_instance->get_name()) + "_col");
+			parent->add_child(static_body, true);
+			static_body->set_owner(m_loader->get_owner());
+			add_collider_from_mesh(static_body, collision_mesh, colshape);
+			break;
+		}
+	}
+
+	// Remove the empty mesh instances if enabled
+	if (m_loader->m_skip_empty_meshes && mesh->get_surface_count() == 0) {
+		parent->remove_child(mesh_instance);
 	}
 
 	return mesh_instance;

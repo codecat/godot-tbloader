@@ -12,6 +12,8 @@
 
 @SolidClass = area : "Area" []
 
+@SolidClass = nocollision : "No collision" []
+
 @PointClass base(Angle) size(-16 -16 -16, 16 16 16) color(0 255 0) = player : "Player" []
 
 @PointClass size(-4 -4 -4, 4 4 4) color(255 255 0) = light : "Light" [
