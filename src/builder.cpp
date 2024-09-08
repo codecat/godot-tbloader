@@ -9,6 +9,7 @@
 #include <godot_cpp/classes/standard_material3d.hpp>
 #include <godot_cpp/classes/convex_polygon_shape3d.hpp>
 #include <godot_cpp/classes/concave_polygon_shape3d.hpp>
+#include <godot_cpp/templates/vmap.hpp>
 
 #include <tb_loader.h>
 
@@ -453,6 +454,11 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	// Give mesh to mesh instance
 	mesh_instance->set_mesh(mesh);
 
+	// Prepare material template
+	auto material_template = m_loader->get_material_template();
+	bool has_material_template = material_template.is_valid();
+	VMap<String, Ref<Material>> material_template_map;
+
 	for (int i = 0; i < m_map->texture_count; i++) {
 		LMTextureData tex = m_map->textures[i];
 
@@ -473,11 +479,27 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 			// Create material
 			if (res_texture != nullptr) {
-				Ref<StandardMaterial3D> new_material = memnew(StandardMaterial3D());
-				new_material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
-				if (m_loader->m_filter_nearest) {
-					new_material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
+				Ref<Material> new_material;
+
+				if (has_material_template) {
+					// Duplicate and set texture for material template
+					// Only creates one copy per texture; materials are reused using a map
+					if (!material_template_map.has(tex.name)) {
+						auto material_template_copy = material_template->duplicate();
+						material_template_copy->set(m_loader->get_material_texture_path(), res_texture);
+						material_template_map.insert(tex.name, material_template_copy);
+					}
+					new_material = material_template_map[tex.name];
+				} else {
+					// Generate new material if no template supplied
+					Ref<StandardMaterial3D> new_standard_material = memnew(StandardMaterial3D());
+					new_standard_material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, res_texture);
+					if (m_loader->m_filter_nearest) {
+						new_standard_material->set_texture_filter(BaseMaterial3D::TEXTURE_FILTER_NEAREST);
+					}
+					new_material = new_standard_material;
 				}
+				
 				material = new_material;
 			}
 		}

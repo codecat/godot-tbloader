@@ -28,6 +28,8 @@ public:
 	bool m_entity_common = true;
 	String m_entity_path = "res://entities";
 	String m_texture_path = "res://textures";
+	Ref<Material> m_material_template;
+	String m_material_texture_path = "albedo_texture";
 	String m_clip_texture_name = "";
 	String m_skip_texture_name = "";
 	uint32_t m_visual_layer_mask = 1;
@@ -70,8 +72,14 @@ public:
 	bool get_entity_common();
 	void set_entity_path(const String& path);
 	String get_entity_path();
+
+	// Textures
 	void set_texture_path(const String& path);
 	String get_texture_path();
+	void set_material_template(const Ref<Material>& material);
+	Ref<Material> get_material_template();
+	void set_material_texture_path(const String& texture_path);
+	String get_material_texture_path();
 
 	void clear();
 	void build_meshes();

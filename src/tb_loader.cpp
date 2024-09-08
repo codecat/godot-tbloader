@@ -34,8 +34,13 @@ void TBLoader::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_entity_common"), &TBLoader::get_entity_common);
 	ClassDB::bind_method(D_METHOD("set_entity_path", "entity_path"), &TBLoader::set_entity_path);
 	ClassDB::bind_method(D_METHOD("get_entity_path"), &TBLoader::get_entity_path);
+
 	ClassDB::bind_method(D_METHOD("set_texture_path", "texture_path"), &TBLoader::set_texture_path);
 	ClassDB::bind_method(D_METHOD("get_texture_path"), &TBLoader::get_texture_path);
+	ClassDB::bind_method(D_METHOD("set_material_template", "material"), &TBLoader::set_material_template);
+	ClassDB::bind_method(D_METHOD("get_material_template"), &TBLoader::get_material_template);
+	ClassDB::bind_method(D_METHOD("set_material_texture_path", "texture_path"), &TBLoader::set_material_texture_path);
+	ClassDB::bind_method(D_METHOD("get_material_texture_path"), &TBLoader::get_material_texture_path);
 
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
@@ -62,6 +67,8 @@ void TBLoader::_bind_methods()
 
 	ADD_GROUP("Textures", "texture_");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "texture_path", PROPERTY_HINT_DIR, "Textures Path"), "set_texture_path", "get_texture_path");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_material_template", PROPERTY_HINT_RESOURCE_TYPE, "Material"), "set_material_template", "get_material_template");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "texture_material_texture_path", PROPERTY_HINT_NONE, "Material Texture Property Path"), "set_material_texture_path", "get_material_texture_path");
 }
 
 TBLoader::TBLoader()
@@ -203,6 +210,26 @@ void TBLoader::set_texture_path(const String& path)
 String TBLoader::get_texture_path()
 {
 	return m_texture_path;
+}
+
+void TBLoader::set_material_template(const Ref<Material>& material)
+{
+	m_material_template = material;
+}
+
+Ref<Material> TBLoader::get_material_template()
+{
+	return m_material_template;
+}
+
+void TBLoader::set_material_texture_path(const String& texture_path)
+{
+	m_material_texture_path = texture_path;
+}
+
+String TBLoader::get_material_texture_path()
+{
+	return m_material_texture_path;
 }
 
 void TBLoader::clear()
