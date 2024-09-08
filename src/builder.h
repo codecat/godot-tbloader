@@ -56,7 +56,7 @@ public:
 	void build_brush(int idx, Node3D* node, LMEntity& ent);
 
 	void build_entity(int idx, LMEntity& ent, const String& classname);
-	void build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
+	void build_entity_custom(int idx, LMEntity& ent, const String& classname);
 	void build_entity_light(int idx, LMEntity& ent);
 	void build_entity_area(int idx, LMEntity& ent);
 
@@ -77,4 +77,8 @@ protected:
 	String material_path(const char* name);
 	Ref<Texture2D> texture_from_name(const char* name);
 	Ref<Material> material_from_name(const char* name);
+
+private:
+	String classname_to_resource_path(const String& classname);
+	void set_custom_entity_properties(LMEntity& ent, Node* instance);
 };
