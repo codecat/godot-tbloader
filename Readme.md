@@ -9,11 +9,17 @@ different approaches to creating meshes, including creating a bunch of `CSGMesh3
 `CSGCombiner3D`, but that ended up being [problematic](https://github.com/godotengine/godot/issues/58637).
 
 When I originally made this, Qodot didn't officially support Godot 4. So I decided to take on the
-challenge and rewrite most of it in godot-cpp mostly for fun. Nowadays, Qodot has a .Net version
-available which does support Godot 4: https://github.com/QodotPlugin/Qodot
+challenge and rewrite most of it in godot-cpp mostly for fun. Nowadays, Qodot has a version available
+which does support Godot 4: https://github.com/QodotPlugin/Qodot
 
 If you're already using Qodot, there might not be a lot of reasons for you to use this. It is not
 backwards compatible with Qodot, and does a few things differently.
+
+# Alternatives
+There are some other alternatives, as well:
+* [func_godot](https://github.com/func-godot/func_godot_plugin): a pure GDScript importer.
+* [Cyclops Level Builder](https://github.com/blackears/cyclopsLevelBuilder): an in-editor level
+  builder, much like what SabreCSG used to be.
 
 # Usage
 To install TBLoader, you can either install it through [AssetLib](https://godotengine.org/asset-library/asset/1265)
