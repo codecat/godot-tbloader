@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TBLoader" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		TrenchBroom loader node which can import map files as meshes and entities.
+	</brief_description>
+	<description>
+		This node can load TrenchBroom map files, and convert all of its contained meshes and entities to Godot nodes, either using the built-in Godot nodes (like [MeshInstance3D], [OmniLight3D], etc.) or using custom nodes as described by the documentation.
+	</description>
+	<tutorials>
+		<link title="Usage guide">https://github.com/codecat/godot-tbloader?tab=readme-ov-file#usage</link>
+	</tutorials>
+	<methods>
+		<method name="build_meshes">
+			<return type="void" />
+			<description>
+				Clears all child nodes and imports the map specified in the properties to Godot nodes as new child nodes.
+			</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>
+				Clears all child nodes.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="entity_common" type="bool" setter="set_entity_common" getter="get_entity_common" default="true">
+			Whether to enable common entities. This includes lights as [OmniLight3D], areas as [Area3D], and "no collision" brushes.
+		</member>
+		<member name="entity_path" type="String" setter="set_entity_path" getter="get_entity_path" default="&quot;res://entities&quot;">
+			The path to use when looking up nodes for custom entities.
+		</member>
+		<member name="lighting_unwrap_texel_size" type="float" setter="set_lighting_unwrap_texel_size" getter="get_lighting_unwrap_texel_size" default="0.2">
+			Texel size to use for lightmap unwrapping, when [lighting_unwrap_uv2] is enabled.
+		</member>
+		<member name="lighting_unwrap_uv2" type="bool" setter="set_lighting_unwrap_uv2" getter="get_lighting_unwrap_uv2" default="false">
+			Perform UV unwrapping on generated meshes to prepare them for lightmapping.
+		</member>
+		<member name="map_inverse_scale" type="int" setter="set_inverse_scale" getter="get_inverse_scale" default="16">
+			The inverse scale to transform the map's scale by. This means that 1 unit in Godot will be N units in TrenchBroom, where N is this value.
+		</member>
+		<member name="map_resource" type="String" setter="set_map" getter="get_map" default="&quot;&quot;">
+			Path to the map file resource to convert to Godot nodes.
+		</member>
+		<member name="option_clip_texture_name" type="String" setter="set_clip_texture_name" getter="get_clip_texture_name" default="&quot;&quot;">
+			Texture name to use for invisible walls. This will skip surfaces in generated meshes that match this texture name, while retaining collision.
+		</member>
+		<member name="option_collision" type="bool" setter="set_collision" getter="get_collision" default="true">
+			Whether to enable collision for generated meshes.
+		</member>
+		<member name="option_filter_nearest" type="bool" setter="set_filter_nearest" getter="get_filter_nearest" default="false">
+			Whether to set texture filter to nearest neighbor.
+		</member>
+		<member name="option_skip_empty_meshes" type="bool" setter="set_skip_empty_meshes" getter="get_skip_empty_meshes" default="true">
+			Prevent empty meshes (both visual &amp; collision) from being added to the node tree.
+		</member>
+		<member name="option_skip_hidden_layers" type="bool" setter="set_skip_hidden_layers" getter="get_skip_hidden_layers" default="true">
+			Don't include layers hidden in TrenchBroom to be included in the map import.
+		</member>
+		<member name="option_skip_texture_name" type="String" setter="set_skip_texture_name" getter="get_skip_texture_name" default="&quot;&quot;">
+			Texture name to use for surfaces to skip in mesh generation. This will skip surfaces in generated meshes that match this texture name, including collision. This is useful for things like backfaces which are normally not visible.
+		</member>
+		<member name="option_visual_layer_mask" type="int" setter="set_visual_layer_mask" getter="get_visual_layer_mask" default="1">
+			Specifies the Godot layers of which all generated nodes will apply.
+		</member>
+		<member name="texture_material_template" type="Material" setter="set_material_template" getter="get_material_template">
+			Template material to use for new materials. If this is not set, a default [StandardMaterial3D] is used.
+		</member>
+		<member name="texture_material_texture_path" type="String" setter="set_material_texture_path" getter="get_material_texture_path" default="&quot;albedo_texture&quot;">
+			Property on the material template to use for the texture.
+		</member>
+		<member name="texture_path" type="String" setter="set_texture_path" getter="get_texture_path" default="&quot;res://textures&quot;">
+			The path to use when looking up textures or materials.
+		</member>
+	</members>
+</class>
