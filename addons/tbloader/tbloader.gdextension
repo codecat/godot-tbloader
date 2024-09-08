@@ -6,6 +6,6 @@ compatibility_minimum = "4.1"
 TBLoader = "res://addons/tbloader/icons/tbloader.svg"
 
 [libraries]
-windows.64 = "bin/tbloader.windows.x86_64.dll"
-linux.64 = "bin/libtbloader.linux.x86_64.so"
-macos.64 = "bin/libtbloader.macos.universal.dylib"
+windows.x86_64 = "bin/tbloader.windows.x86_64.dll"
+linux.x86_64 = "bin/libtbloader.linux.x86_64.so"
+macos = "bin/libtbloader.macos.universal.dylib"
