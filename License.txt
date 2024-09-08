@@ -1,4 +1,4 @@
-Copyright 2022 Melissa "Codecat" Geels
+Copyright 2022-2024 Melissa "Codecat" Geels
 Copyright 2021 Álex "EIREXE" Román
 Copyright 2019 Josh "Shifty" Palmer
 
