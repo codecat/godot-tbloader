@@ -308,12 +308,14 @@ void Builder::set_entity_node_common(Node3D* node, LMEntity& ent)
 		if (ent.has_property("angle")) {
 			// "angle" is yaw rotation only
 			yaw = ent.get_property_double("angle");
+
 		} else if (ent.has_property("angles")) {
 			// "angles" is "pitch yaw roll"
 			vec3 angles = ent.get_property_vec3("angles");
 			pitch = angles.x;
 			yaw = angles.y;
 			roll = angles.z;
+
 		} else if (ent.has_property("mangle")) {
 			vec3 mangle = ent.get_property_vec3("mangle");
 			// "mangle" depends on whether the classname starts with "light"
@@ -334,7 +336,7 @@ void Builder::set_entity_node_common(Node3D* node, LMEntity& ent)
 		node->set_rotation(Vector3(
 			Math::deg_to_rad(-pitch),
 			Math::deg_to_rad(yaw + 180),
-			Math::deg_to_rad(roll)
+			Math::deg_to_rad(-roll)
 		));
 	}
 }
