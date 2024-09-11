@@ -67,7 +67,7 @@ void Builder::build_map()
 	}
 }
 
-void Builder::build_worldspawn(int idx, LMEntity& ent, bool no_collision)
+void Builder::build_worldspawn(int idx, LMEntity& ent, bool collision)
 {
 	// Create node for this entity
 	auto container_node = memnew(Node3D());
@@ -77,7 +77,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent, bool no_collision)
 	// Decide generated collision type
 	ColliderType collider = ColliderType::None;
 	ColliderShape collider_shape = ColliderShape::Concave;
-	if (!no_collision && m_loader->m_collision) {
+	if (collision && m_loader->m_collision) {
 		collider = ColliderType::Static;
 		collider_shape = ColliderShape::Concave;
 	}
@@ -116,7 +116,7 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 				return;
 			}
 		}
-		build_worldspawn(idx, ent, false);
+		build_worldspawn(idx, ent, true);
 		return;
 	}
 
@@ -132,7 +132,7 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 		}
 
 		if (classname == "nocollision") {
-			build_worldspawn(idx, ent, true);
+			build_worldspawn(idx, ent, false);
 			return;
 		}
 
