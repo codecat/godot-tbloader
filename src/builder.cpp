@@ -506,7 +506,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 					}
 					new_material = new_standard_material;
 				}
-				
+
 				material = new_material;
 			}
 		}
