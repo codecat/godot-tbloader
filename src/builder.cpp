@@ -67,7 +67,7 @@ void Builder::build_map()
 	}
 }
 
-void Builder::build_worldspawn(int idx, LMEntity& ent, bool collision)
+Node* Builder::build_worldspawn(int idx, LMEntity& ent, bool collision)
 {
 	// Create node for this entity
 	auto container_node = memnew(Node3D());
@@ -88,7 +88,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent, bool collision)
 	// Delete container if we added nothing to it
 	if (container_node->get_child_count() == 0) {
 		container_node->queue_free();
-		return;
+		return nullptr;
 	}
 
 	// Find name for entity
@@ -104,45 +104,55 @@ void Builder::build_worldspawn(int idx, LMEntity& ent, bool collision)
 		container_node->set_name(tb_name);
 	}
 	container_node->set_position(lm_transform(ent.center));
+
+	return container_node;
 }
 
-void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
+Node* Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 {
+	Node* newEntityNode = nullptr;
+
 	if (classname == "worldspawn" || classname == "func_group") {
 		// Skip worldspawn if the layer is hidden and the "skip hidden layers" option is checked
 		if (m_loader->m_skip_hidden_layers) {
 			bool is_visible = (ent.get_property_int("_tb_layer_hidden", 0) == 0);
 			if (!is_visible) {
-				return;
+				return nullptr;
 			}
 		}
-		build_worldspawn(idx, ent, true);
-		return;
+		newEntityNode = build_worldspawn(idx, ent, true);
+
+	} else {
+		// Load common entities if enabled
+		if (m_loader->m_entity_common) {
+			if (classname == "light") {
+				newEntityNode = build_entity_light(idx, ent);
+			} else if (classname == "area") {
+				newEntityNode = build_entity_area(idx, ent);
+			} else if (classname == "nocollision") {
+				newEntityNode = build_worldspawn(idx, ent, false);
+			}
+
+			//TODO: More common entities
+		}
+
+		if (newEntityNode == nullptr) {
+			// Still no entity? We're building a custom one
+			newEntityNode = build_entity_custom(idx, ent, m_map->entity_geo[idx], classname);
+		}
 	}
 
-	if (m_loader->m_entity_common) {
-		if (classname == "light") {
-			build_entity_light(idx, ent);
-			return;
+	if (newEntityNode != nullptr) {
+		// Load common properties
+		if (ent.has_property("name")) {
+			newEntityNode->set_name(ent.get_property("name"));
 		}
-
-		if (classname == "area") {
-			build_entity_area(idx, ent);
-			return;
-		}
-
-		if (classname == "nocollision") {
-			build_worldspawn(idx, ent, false);
-			return;
-		}
-
-		//TODO: More common entities
 	}
 
-	build_entity_custom(idx, ent, m_map->entity_geo[idx], classname);
+	return newEntityNode;
 }
 
-void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname)
+Node* Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname)
 {
 	// m_loader->m_entity_path => "res://entities/"
 	// "info_player_start" => "info/player/start.tscn", "info/player_start.tscn", "info_player_start.tscn"
@@ -169,7 +179,7 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 			Ref<PackedScene> scene = resource_loader->load(path);
 			if (scene == nullptr) {
 				UtilityFunctions::printerr("Resource at path '", path, "' could not be loaded as a PackedScene by the resource loader!");
-				return;
+				return nullptr;
 			}
 
 			auto instance = scene->instantiate();
@@ -224,14 +234,16 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 					}
 				}
 			}
-			return;
+
+			return instance;
 		}
 	}
 
 	UtilityFunctions::printerr("Path to entity resource could not be resolved: ", classname);
+	return nullptr;
 }
 
-void Builder::build_entity_light(int idx, LMEntity& ent)
+Node* Builder::build_entity_light(int idx, LMEntity& ent)
 {
 	auto light = memnew(OmniLight3D());
 
@@ -247,9 +259,11 @@ void Builder::build_entity_light(int idx, LMEntity& ent)
 
 	m_loader->add_child(light);
 	light->set_owner(m_loader->get_owner());
+
+	return light;
 }
 
-void Builder::build_entity_area(int idx, LMEntity& ent)
+Node* Builder::build_entity_area(int idx, LMEntity& ent)
 {
 	Vector3 center = lm_transform(ent.center);
 
@@ -260,7 +274,7 @@ void Builder::build_entity_area(int idx, LMEntity& ent)
 
 	auto& surfs = surf_gather.out_surfaces;
 	if (surfs.surface_count == 0) {
-		return;
+		return nullptr;
 	}
 
 	// Create the area
@@ -282,6 +296,8 @@ void Builder::build_entity_area(int idx, LMEntity& ent)
 		// Create collision shape for the area
 		add_collider_from_mesh(area, mesh, ColliderShape::Concave);
 	}
+
+	return area;
 }
 
 void Builder::set_entity_node_common(Node3D* node, LMEntity& ent)

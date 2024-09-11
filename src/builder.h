@@ -52,13 +52,13 @@ public:
 	void load_map(const String& path);
 	void build_map();
 
-	void build_worldspawn(int idx, LMEntity& ent, bool collision);
+	Node* build_worldspawn(int idx, LMEntity& ent, bool collision);
 	void build_brush(int idx, Node3D* node, LMEntity& ent);
 
-	void build_entity(int idx, LMEntity& ent, const String& classname);
-	void build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
-	void build_entity_light(int idx, LMEntity& ent);
-	void build_entity_area(int idx, LMEntity& ent);
+	Node* build_entity(int idx, LMEntity& ent, const String& classname);
+	Node* build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
+	Node* build_entity_light(int idx, LMEntity& ent);
+	Node* build_entity_area(int idx, LMEntity& ent);
 
 	void set_entity_node_common(Node3D* node, LMEntity& ent);
 	void set_entity_brush_common(int idx, Node3D* node, LMEntity& ent);
