@@ -263,6 +263,12 @@ void Builder::build_entity_area(int idx, LMEntity& ent)
 		return;
 	}
 
+	// Create the area
+	auto area = memnew(Area3D());
+	m_loader->add_child(area);
+	area->set_owner(m_loader->get_owner());
+	area->set_position(center);
+
 	for (int i = 0; i < surfs.surface_count; i++) {
 		auto& surf = surfs.surfaces[i];
 		if (surf.vertex_count == 0) {
@@ -272,12 +278,6 @@ void Builder::build_entity_area(int idx, LMEntity& ent)
 		// Create the mesh
 		Ref<ArrayMesh> mesh = memnew(ArrayMesh());
 		add_surface_to_mesh(mesh, surf);
-
-		// Create the area
-		auto area = memnew(Area3D());
-		m_loader->add_child(area);
-		area->set_owner(m_loader->get_owner());
-		area->set_position(center);
 
 		// Create collision shape for the area
 		add_collider_from_mesh(area, mesh, ColliderShape::Concave);
