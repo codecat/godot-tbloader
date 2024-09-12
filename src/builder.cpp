@@ -578,6 +578,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		case ColliderType::Static:
 			StaticBody3D* static_body = memnew(StaticBody3D());
 			static_body->set_name(String(mesh_instance->get_name()) + "_col");
+			static_body->set_collision_layer(m_loader->get_collision_layer_mask());
 			parent->add_child(static_body, true);
 			static_body->set_owner(m_loader->get_owner());
 			add_collider_from_mesh(static_body, collision_mesh, colshape);
