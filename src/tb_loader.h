@@ -34,6 +34,7 @@ public:
 	String m_clip_texture_name = "";
 	String m_skip_texture_name = "";
 	uint32_t m_visual_layer_mask = 1;
+	uint32_t m_collision_layer_mask = 1;
 
 protected:
 	static void _bind_methods();
@@ -69,6 +70,8 @@ public:
 	String get_skip_texture_name();
 	uint32_t get_visual_layer_mask();
 	void set_visual_layer_mask(uint32_t visual_layer_mask);
+	uint32_t get_collision_layer_mask();
+	void set_collision_layer_mask(uint32_t collision_layer_mask);
 
 	// Entities
 	void set_entity_common(bool enabled);
