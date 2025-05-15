@@ -631,21 +631,21 @@ void Builder::load_and_cache_map_textures()
 
 String Builder::texture_path(const char* name, const char* extension)
 {
-	return m_loader->m_texture_path + "/" + name + "." + extension;
+	return m_loader->m_texture_path.path_join(String(name) + "." + extension);
 }
 
 String Builder::material_path(const char* name)
 {
-	auto root_path = m_loader->m_texture_path + "/" + name;
-	String material_path;
+	auto resource_loader = ResourceLoader::get_singleton();
+	auto root_path = m_loader->m_texture_path.path_join(name);
 
-	if (FileAccess::file_exists(root_path + ".material")) {
-		material_path = root_path + ".material";
-	} else if (FileAccess::file_exists(root_path + ".tres")) {
-		material_path = root_path + ".tres";
+	if (resource_loader->exists(root_path + ".material")) {
+		return root_path + ".material";
+	} else if (resource_loader->exists(root_path + ".tres")) {
+		return root_path + ".tres";
 	}
 
-	return material_path;
+	return "";
 }
 
 Ref<Texture2D> Builder::texture_from_name(const char* name)
