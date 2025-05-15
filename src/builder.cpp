@@ -636,12 +636,21 @@ String Builder::texture_path(const char* name, const char* extension)
 
 String Builder::material_path(const char* name)
 {
-	auto root_path = m_loader->m_texture_path + "/" + name;
+	auto root_path = sanitized_dir(m_loader->m_texture_path) + name;
 	String material_path;
 
+	// Search loose filesystem
 	if (FileAccess::file_exists(root_path + ".material")) {
 		material_path = root_path + ".material";
 	} else if (FileAccess::file_exists(root_path + ".tres")) {
+		material_path = root_path + ".tres";
+	}
+	// If this fails (which it will during runtime or when game is exported) we use the ResourceLoader
+	// to check for the material via filename
+	else if (ResourceLoader::get_singleton()->exists(root_path + ".material")) {
+		material_path = root_path + ".material";
+	}
+	else if (ResourceLoader::get_singleton()->exists(root_path + ".tres")) {
 		material_path = root_path + ".tres";
 	}
 
@@ -659,11 +668,26 @@ Ref<Texture2D> Builder::texture_from_name(const char* name)
 Ref<Material> Builder::material_from_name(const char* name)
 {
 	auto path = material_path(name);
-
-	auto resource_loader = ResourceLoader::get_singleton();
-	if (!resource_loader->exists(path)) {
+	if (path.is_empty()) {
 		return nullptr;
 	}
 
+	auto resource_loader = ResourceLoader::get_singleton();
+
 	return resource_loader->load(path);
+}
+
+/*static*/ String Builder::sanitized_dir(const char* name)
+{
+	return sanitized_dir(String(name));
+}
+
+/*static*/ String Builder::sanitized_dir(String name)
+{
+	const int64_t len = name.length();
+	if (len <= 0) return name;
+
+	return (name[len-1] == '/')
+		? name
+		: (name + '/');
 }

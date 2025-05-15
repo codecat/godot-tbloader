@@ -77,4 +77,8 @@ protected:
 	String material_path(const char* name);
 	Ref<Texture2D> texture_from_name(const char* name);
 	Ref<Material> material_from_name(const char* name);
+
+protected:
+	static String sanitized_dir(const char* name);
+	static String sanitized_dir(String name);
 };
