@@ -3,6 +3,14 @@ Made as an alternative to [Qodot](https://github.com/QodotPlugin/qodot-plugin), 
 same map parsing code using the original [libmap](https://github.com/QodotPlugin/libmap) and a
 modified [C++ port](https://github.com/EIRTeam/qodot/tree/4.0) of it.
 
+# Archived
+Thanks to everyone for supporting TBLoader over the years, I really appreciate all the contributions.
+However, I am no longer actively using TBLoader myself, and I have mostly moved over to using
+[func_godot](https://github.com/func-godot/func_godot_plugin), which I highly recommend as a
+maintained replacement for TBLoader - it's everything I've wanted TBLoader to be and more.
+
+The original readme is retained below.
+
 # Why not Qodot?
 Qodot is great! It works really well. I initially made TBLoader because I wanted to try several
 different approaches to creating meshes, including creating a bunch of `CSGMesh3D` inside of
